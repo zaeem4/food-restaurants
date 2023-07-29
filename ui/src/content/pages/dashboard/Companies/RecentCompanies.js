@@ -2,13 +2,23 @@ import { useMemo, useEffect, useState, useRef } from "react";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
 
-import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  Tooltip,
+  IconButton,
+  Toolbar,
+} from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MaterialReactTable from "material-react-table";
 
-import AddNewIngredientsModal from "./AddNewIngredientsModal.js";
+import AddNewCompanyModal from "./AddNewCompanyModal.js";
 
-function RecentIngredients() {
+// import { apiCall } from 'src/utils/axios';
+// import { generateColFilters } from 'src/utils/table';
+
+function RecentCompanies() {
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
@@ -17,7 +27,7 @@ function RecentIngredients() {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  const fetchIngredients = async () => {
+  const fetchCompanies = async () => {
     try {
       // if (!data.length) {
       //   setIsLoading(true);
@@ -56,6 +66,7 @@ function RecentIngredients() {
       //   setIsLoading(false);
       //   return;
       // }
+
       setData([]);
       setIsError(false);
       setIsLoading(false);
@@ -70,7 +81,7 @@ function RecentIngredients() {
   const handleCreateNewRow = (values) => {};
 
   useEffect(() => {
-    fetchIngredients();
+    fetchCompanies();
 
     return () => {
       setData([]);
@@ -81,19 +92,49 @@ function RecentIngredients() {
     () => [
       {
         accessorKey: "name",
-        header: "name",
+        header: "Name",
         size: 150,
         createAble: true,
       },
       {
-        accessorKey: "discription",
-        header: "Discription",
+        accessorKey: "address",
+        header: "Address",
         size: 150,
         createAble: true,
       },
       {
-        accessorKey: "meal_id",
-        header: "Meal ID",
+        accessorKey: "phone",
+        header: "Phone Number",
+        size: 200,
+        createAble: true,
+      },
+      {
+        accessorKey: "owner",
+        header: "Owner",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "city",
+        header: "City",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "tax_number",
+        header: "Tax Number",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "emal",
+        header: "Email",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "shifts",
+        header: "Shifts",
         size: 150,
         createAble: true,
       },
@@ -195,7 +236,7 @@ function RecentIngredients() {
           showAlertBanner: isError,
         }}
       />
-      <AddNewIngredientsModal
+      <AddNewCompanyModal
         columns={columns}
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
@@ -205,4 +246,4 @@ function RecentIngredients() {
   );
 }
 
-export default RecentIngredients;
+export default RecentCompanies;

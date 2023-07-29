@@ -222,7 +222,7 @@ export const NebulaFighterTheme = createTheme({
     },
   },
   general: {
-    reactFrameworkColor: "#00D8FF",
+    reactFrameworkColor: "#06A759",
     borderRadiusSm: "6px",
     borderRadius: "10px",
     borderRadiusLg: "12px",
@@ -239,7 +239,7 @@ export const NebulaFighterTheme = createTheme({
     menuItemIconColor: colors.layout.sidebar.menuItemIconColor,
     menuItemIconColorActive: colors.layout.sidebar.menuItemIconColorActive,
     menuItemHeadingColor: colors.layout.sidebar.menuItemHeadingColor,
-    boxShadow: "0.5px 0 0 #a9a9a9",
+    boxShadow: "1px 0 0 #a9a9a9",
     width: "290px",
   },
   header: {
@@ -349,7 +349,7 @@ export const NebulaFighterTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: darken(themeColors.primaryAlt, 0.5),
+          backgroundColor: themeColors.white,
         },
       },
     },
@@ -399,7 +399,7 @@ export const NebulaFighterTheme = createTheme({
         },
         ":root": {
           "--swiper-theme-color": colors.primary.main,
-          colorScheme: "dark",
+          colorScheme: "light",
         },
         code: {
           background: colors.info.lighter,

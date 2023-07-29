@@ -7,7 +7,7 @@ function PageHeader() {
     <Grid container justifyContent="space-between" alignItems="center">
       <Grid item>
         <Typography variant="h4" gutterBottom>
-        Meals And Ingredients
+        Menus
         </Typography>
       </Grid>
     </Grid>

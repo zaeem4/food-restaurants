@@ -1,59 +1,21 @@
 import { useMemo, useEffect, useState, useRef } from "react";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
-import MaterialReactTable from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
 
-import {
-  Box,
-  Button,
-  Card,
-  Tooltip,
-  IconButton,
-  Toolbar,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import MaterialReactTable from "material-react-table";
 
-// import { apiCall } from 'src/utils/axios';
-// import { generateColFilters } from 'src/utils/table';
+import AddNewRestaurantsModal from "./AddNewRestaurantsModal.js";
 
 function RecentRestaurants() {
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "name",
-        header: "name",
-        size: 150,
-      },
-      {
-        accessorKey: "address",
-        header: "Address",
-        size: 150,
-      },
-      {
-        accessorKey: "phone",
-        header: "Phone",
-        size: 200,
-      },
-      {
-        accessorKey: "owner",
-        header: "Owner",
-        size: 150,
-      },
-      {
-        accessorKey: "state",
-        header: "State",
-        size: 150,
-      },
-    ],
-    []
-  );
+  const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  const theme = useTheme();
-  const tableInstanceRef = useRef(null);
+
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const fetchRestaurants = async () => {
     try {
@@ -94,7 +56,7 @@ function RecentRestaurants() {
       //   setIsLoading(false);
       //   return;
       // }
-
+      setData([]);
       setIsError(false);
       setIsLoading(false);
       // setIsRefetching(false);
@@ -105,6 +67,8 @@ function RecentRestaurants() {
     }
   };
 
+  const handleCreateNewRow = (values) => {};
+
   useEffect(() => {
     fetchRestaurants();
 
@@ -112,6 +76,76 @@ function RecentRestaurants() {
       setData([]);
     };
   }, []);
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "phone",
+        header: "Phone Number",
+        size: 200,
+        createAble: true,
+      },
+      {
+        accessorKey: "owner",
+        header: "Owner",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "city",
+        header: "City",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "city",
+        header: "City",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "tax_number",
+        header: "Tax Number",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorFn: (row) => new Date(row.created_on),
+        Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
+        accessorKey: "created_on",
+        header: "Created On",
+        size: 150,
+        createAble: false,
+      },
+      {
+        accessorFn: (row) => new Date(row.updated_on),
+        Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
+        accessorKey: "updated_on",
+        header: "Updated On",
+        size: 150,
+        createAble: false,
+      },
+    ],
+    []
+  );
 
   return (
     <Card>
@@ -132,32 +166,27 @@ function RecentRestaurants() {
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
           <Box>
             <Button
-              onClick={() => {
-                alert("Add User");
-              }}
-              sx={{
-                backgroundColor: theme.colors.secondary.main,
-                color: theme.colors.primary.main,
-              }}
               variant="contained"
+              onClick={() => setCreateModalOpen(true)}
             >
-              Crete New Account
+              Add New
             </Button>
           </Box>
         </Toolbar>
       )}
       <MaterialReactTable
+        tableInstanceRef={tableInstanceRef}
         columns={columns}
         data={data}
         enableColumnFilters={false}
         enableFullScreenToggle={false}
         enableDensityToggle={false}
+        enableTopToolbar={false}
         enableStickyHeader
         enableStickyFooter
         enableRowActions
         positionToolbarAlertBanner="bottom"
         positionActionsColumn={"last"}
-        enableTopToolbar={false}
         initialState={{
           showGlobalFilter: true,
         }}
@@ -185,26 +214,22 @@ function RecentRestaurants() {
             </Tooltip>
           </Box>
         )}
+        globalFilterModeOptions={["fuzzy", "startsWith"]}
         muiSearchTextFieldProps={{
           placeholder: `Search`,
-          sx: { minWidth: "300%" },
+          sx: { minWidth: "330%" },
           variant: "outlined",
         }}
-        // onColumnFiltersChange={setColumnFilters}
-        // onGlobalFilterChange={setGlobalFilter}
-        // onPaginationChange={setPagination}
-        // onSortingChange={setSorting}
-        // rowCount={rowCount}
         state={{
-          // columnFilters,
-          // globalFilter,
           isLoading,
-          // pagination,
           showAlertBanner: isError,
-          // showProgressBars: isRefetching,
-          // sorting
         }}
-        tableInstanceRef={tableInstanceRef}
+      />
+      <AddNewRestaurantsModal
+        columns={columns}
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreateNewRow}
       />
     </Card>
   );
