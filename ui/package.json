@@ -1,0 +1,92 @@
+{
+  "name": "visewealth-admin-dashboard",
+  "version": "0.0.2",
+  "title": "Vise Wealth Admin Dashboard",
+  "description": "",
+  "author": {
+    "name": "zaeem1169@gmail.com",
+    "url": "https://visewealth.com"
+  },
+  "private": false,
+  "dependencies": {
+    "@emotion/react": "11.9.0",
+    "@emotion/styled": "11.8.1",
+    "@mui/icons-material": "5.8.2",
+    "@mui/lab": "5.0.0-alpha.84",
+    "@mui/material": "5.8.2",
+    "@mui/styles": "5.8.0",
+    "@reduxjs/toolkit": "^1.9.1",
+    "apexcharts": "3.35.3",
+    "axios": "^1.2.2",
+    "clsx": "1.1.1",
+    "convert-array-to-csv": "^2.0.0",
+    "date-fns": "2.28.0",
+    "formik": "^2.2.9",
+    "history": "5.3.0",
+    "material-react-table": "^1.5.4",
+    "notistack": "^2.0.8",
+    "nprogress": "0.2.0",
+    "numeral": "2.0.6",
+    "prop-types": "15.8.1",
+    "react": "17.0.2",
+    "react-apexcharts": "1.4.0",
+    "react-custom-scrollbars-2": "4.4.0",
+    "react-dom": "17.0.2",
+    "react-helmet-async": "1.3.0",
+    "react-redux": "^8.0.5",
+    "react-router": "6.3.0",
+    "react-router-dom": "6.3.0",
+    "react-scripts": "5.0.1",
+    "redux-persist": "^6.0.0",
+    "redux-persist-transform-encrypt": "^4.0.0",
+    "redux-state-sync": "^3.1.4",
+    "stylis": "4.1.1",
+    "stylis-plugin-rtl": "2.1.1",
+    "web-vitals": "2.1.4",
+    "yup": "^0.32.11"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ./src",
+    "format": "prettier --write \"./**/*.{js,jsx,json}\" --config ./.prettierrc"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "7.18.2",
+    "@babel/eslint-parser": "7.18.2",
+    "eslint": "8.17.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsx-a11y": "6.5.1",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-react": "7.30.0",
+    "eslint-plugin-react-hooks": "4.5.0",
+    "prettier": "2.6.2"
+  }
+}
