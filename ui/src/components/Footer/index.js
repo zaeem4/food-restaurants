@@ -29,11 +29,11 @@ function Footer() {
         >
           Crafted by{' '}
           <Link
-            href="https://viseclub.com"
+            href="https://www.linkedin.com/in/muhammad-zaeem-khan/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Viseclub.com
+            zaeem
           </Link>
         </Typography>
       </Box>
