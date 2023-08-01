@@ -441,8 +441,8 @@ export const NebulaFighterTheme = createTheme({
       styleOverrides: {
         root: {
           color: colors.alpha.trueWhite[100],
-          "&:focused .Mui-focused": {
-            color: colors.alpha.trueWhite[100],
+          "&.Mui-focused": {
+            color: `${colors.alpha.black[100]}`,
           },
         },
       },
@@ -456,10 +456,10 @@ export const NebulaFighterTheme = createTheme({
             paddingRight: 6,
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: colors.alpha.trueWhite[100],
+            borderColor: colors.alpha.white[100],
           },
           "&.Mui-focused:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: colors.alpha.trueWhite[100],
+            borderColor: colors.alpha.white[100],
           },
         },
       },
@@ -778,6 +778,13 @@ export const NebulaFighterTheme = createTheme({
             background: colors.alpha.black[100],
             color: colors.alpha.white[100],
           },
+        },
+      },
+    },
+    MuiModal: {
+      styleOverrides: {
+        root: {
+          zIndex: 10,
         },
       },
     },

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-// import { useDispatch } from 'react-redux';
-import * as Yup from "yup";
-import { useFormik, Form, FormikProvider } from "formik";
+import { useDispatch } from "react-redux";
 
 import {
   Stack,
@@ -17,12 +15,16 @@ import { LoadingButton } from "@mui/lab";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-// import { apiCall } from 'src/utils/axios';
+import * as Yup from "yup";
+import { useFormik, Form, FormikProvider } from "formik";
 
-// import { setUser } from 'src/redux/user';
+import Swal from "sweetalert2";
+import { apiPost } from "src/utils/axios";
+
+import { setUser } from "src/redux/user";
 
 export default function LoginForm() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [spinner, setSpinner] = useState(false);
@@ -46,27 +48,35 @@ export default function LoginForm() {
       try {
         setSpinner(true);
         formik.values.email = formik.values.email.toLowerCase();
-        navigate({ pathname: "/dashboard" });
 
-        // if (data.success) {
-        //   localStorage.setItem('TOKEN', data.body);
-        //   dispatch(setUser(data.admin));
-        // } else {
-        //   if (data.body.match(/password/i)) {
-        //     setErrors({ password: data.body });
-        //   } else if (data.body.match(/email/i)) {
-        //     setErrors({ email: data.body });
-        //   }
-        //   setSpinner(false);
-        // }
+        const data = await apiPost(`/login`, formik.values);
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          dispatch(setUser(data.userDetails));
+
+          navigate({ pathname: "/dashboard" });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: data.error,
+          });
+
+          setSpinner(false);
+        }
       } catch (error) {
-        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error,
+        });
         setSpinner(false);
       }
     },
   });
 
-  const { setErrors, errors, touched, handleSubmit, getFieldProps } = formik;
+  const { errors, touched, handleSubmit, getFieldProps } = formik;
 
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
@@ -126,6 +136,7 @@ export default function LoginForm() {
             variant="subtitle1"
             color="secondary"
             sx={{ textDecoration: "none", cursor: "pointer" }}
+            onClick={() => navigate({ pathname: "/forget-password" })}
           >
             Forgot Password?
           </Typography>

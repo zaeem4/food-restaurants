@@ -1,15 +1,24 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialStateValue = {
-  first_name: '',
-  last_name: '',
-  email: '',
-  designation: '',
-  level: ''
+  userName: "",
+  email: "",
+  role: "",
+  scope: {
+    dashboard: false,
+    restaurants: false,
+    meals: false,
+    invoices: false,
+    companies: false,
+    menus: false,
+    orders: false,
+    employees: false,
+    reports: false,
+  },
 };
 
 export const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: { value: initialStateValue },
   reducers: {
     setUser: (state, action) => {
@@ -17,8 +26,8 @@ export const userSlice = createSlice({
     },
     clearUser: (state) => {
       state.value = initialStateValue;
-    }
-  }
+    },
+  },
 });
 
 export const { setUser, clearUser } = userSlice.actions;

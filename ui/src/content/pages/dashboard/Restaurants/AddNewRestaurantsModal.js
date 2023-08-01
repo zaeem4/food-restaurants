@@ -12,6 +12,9 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
+import Swal from "sweetalert2";
+import { apiPost } from "src/utils/axios";
+
 const AddNewRestaurantsModal = ({ open, columns, onClose, onSubmit }) => {
   const [spinner, setSpinner] = useState(false);
 
@@ -24,10 +27,38 @@ const AddNewRestaurantsModal = ({ open, columns, onClose, onSubmit }) => {
     }, {})
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(values);
-    onClose();
+    try {
+      setSpinner(true);
+      const data = await apiPost(`/admin/restaurant/create`, values);
+
+      if (data.success) {
+        onSubmit(values);
+        setSpinner(false);
+        onClose();
+        Swal.fire({
+          icon: "success",
+          title: "Successfully created",
+          text: `Password is ${data.password}`,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+
+        setSpinner(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setSpinner(false);
+    }
   };
 
   return (
@@ -59,8 +90,8 @@ const AddNewRestaurantsModal = ({ open, columns, onClose, onSubmit }) => {
                     required
                     error={!values[column.accessorKey]}
                     variant="standard"
-                    key={column.accessorKey}
                     label={column.header}
+                    key={column.accessorKey}
                     name={column.accessorKey}
                     onChange={(e) =>
                       setValues({ ...values, [e.target.name]: e.target.value })

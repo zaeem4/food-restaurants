@@ -1,15 +1,15 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
-import SidebarLayout from 'src/layouts/SidebarLayout';
+import SidebarLayout from "src/layouts/SidebarLayout";
 
 export const Authorized = () => {
-  const token = localStorage.getItem('TOKEN');
+  const token = localStorage.getItem("token");
 
-  return <SidebarLayout />;
   /* eslint-disable */
-  // if (token) {
-  // } else {
-  //   return <Navigate to="/login" />;
-  // }
+  if (token) {
+    return <SidebarLayout />;
+  } else {
+    return <Navigate to="/login" />;
+  }
   /* eslint-enable */
 };

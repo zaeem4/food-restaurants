@@ -1,7 +1,7 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from "react-router-dom";
 
 export const LoggedIn = () => {
-  const token = localStorage.getItem('TOKEN');
+  const token = localStorage.getItem("token");
 
   /* eslint-disable */
   if (token) {

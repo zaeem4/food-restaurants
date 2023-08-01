@@ -3,7 +3,7 @@ import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-
 // import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import EditIcon from '@mui/icons-material/Edit';
 import MaterialReactTable from "material-react-table";
 
 import AddNewMealsModal from "./AddNewMealsModal.js";
@@ -111,17 +111,17 @@ const columns = useMemo(
       createAble: true,
     },
     {
-      accessorFn: (row) => new Date(row.created_on),
+      accessorFn: (row) => new Date(row.created_at),
       Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-      accessorKey: "created_on",
+      accessorKey: "created_at",
       header: "Created On",
       size: 150,
       createAble: false,
     },
     {
-      accessorFn: (row) => new Date(row.updated_on),
+      accessorFn: (row) => new Date(row.updated_at),
       Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-      accessorKey: "updated_on",
+      accessorKey: "updated_at",
       header: "Updated On",
       size: 150,
       createAble: false,
@@ -192,7 +192,7 @@ const columns = useMemo(
             <Tooltip arrow placement="left" title="View Details">
               <span>
                 <IconButton onClick={() => {}}>
-                  <DashboardIcon />
+                  <EditIcon />
                 </IconButton>
               </span>
             </Tooltip>

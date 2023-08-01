@@ -3,10 +3,13 @@ import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-
 // import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import EditIcon from "@mui/icons-material/Edit";
+
 import MaterialReactTable from "material-react-table";
 
 import AddNewRestaurantsModal from "./AddNewRestaurantsModal.js";
+
+import { apiGet } from "src/utils/axios";
 
 function RecentRestaurants() {
   const tableInstanceRef = useRef(null);
@@ -19,51 +22,21 @@ function RecentRestaurants() {
 
   const fetchRestaurants = async () => {
     try {
-      // if (!data.length) {
-      //   setIsLoading(true);
-      // } else {
-      //   setIsRefetching(true);
-      // }
+      setIsLoading(true);
 
-      // const response = await apiCall('getUsers', {
-      //   query: `query($page: Int, $limit: Int, $columnFilters: [ColumnFilter], $globalFilter: String, $sorting: sortBy){
-      //             getUsers(page: $page, limit: $limit, columnFilters: $columnFilters, globalFilter: $globalFilter, sorting: $sorting) {
-      //               body
-      //               success
-      //               total
-      //               users {
-      //                 email
-      //                 name
-      //                 walletAddressDB
-      //                 profilePicture
-      //                 ReferredBy
-      //               }
-      //             }
-      //           }`,
-      //   variables: {
-      //     page: pagination.pageIndex,
-      //     limit: pagination.pageSize,
-      //     columnFilters: generateColFilters(columnFilters, columns),
-      //     globalFilter: globalFilter,
-      //     sorting: sorting.length > 0 ? sorting[0] : null
-      //   }
-      // });
-      // if (response.success) {
-      //   setData(response.users);
-      //   setRowCount(response.total);
-      // } else {
-      //   setIsError(true);
-      //   setIsLoading(false);
-      //   return;
-      // }
-      setData([]);
+      const response = await apiGet("/admin/restaurants");
+      if (response.success) {
+        setData(response.restaurants);
+      } else {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      }
       setIsError(false);
       setIsLoading(false);
-      // setIsRefetching(false);
     } catch (error) {
       setIsError(true);
       setIsLoading(false);
-      // console.log(error);
     }
   };
 
@@ -80,7 +53,7 @@ function RecentRestaurants() {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "name",
+        accessorKey: "user_name",
         header: "Name",
         size: 150,
         createAble: true,
@@ -110,12 +83,6 @@ function RecentRestaurants() {
         createAble: true,
       },
       {
-        accessorKey: "city",
-        header: "City",
-        size: 150,
-        createAble: true,
-      },
-      {
         accessorKey: "tax_number",
         header: "Tax Number",
         size: 150,
@@ -128,17 +95,17 @@ function RecentRestaurants() {
         createAble: true,
       },
       {
-        accessorFn: (row) => new Date(row.created_on),
+        accessorFn: (row) => new Date(row.created_at),
         Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-        accessorKey: "created_on",
+        accessorKey: "created_at",
         header: "Created On",
         size: 150,
         createAble: false,
       },
       {
-        accessorFn: (row) => new Date(row.updated_on),
+        accessorFn: (row) => new Date(row.updated_at),
         Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-        accessorKey: "updated_on",
+        accessorKey: "updated_at",
         header: "Updated On",
         size: 150,
         createAble: false,
@@ -186,7 +153,7 @@ function RecentRestaurants() {
         enableStickyFooter
         enableRowActions
         positionToolbarAlertBanner="bottom"
-        positionActionsColumn={"last"}
+        // positionActionsColumn={"last"}
         initialState={{
           showGlobalFilter: true,
         }}
@@ -208,7 +175,7 @@ function RecentRestaurants() {
             <Tooltip arrow placement="left" title="View Details">
               <span>
                 <IconButton onClick={() => {}}>
-                  <DashboardIcon />
+                  <EditIcon />
                 </IconButton>
               </span>
             </Tooltip>

@@ -18,6 +18,9 @@ const Loader = (Component) => (props) =>
 // Pages
 
 const Login = Loader(lazy(() => import("src/content/pages/Static/Login")));
+const ForgetPassword = Loader(
+  lazy(() => import("src/content/pages/Static/ForgetPassword"))
+);
 
 // Dashboards
 
@@ -68,6 +71,16 @@ const Router = [
           {
             path: "",
             element: <Login />,
+          },
+        ],
+      },
+      {
+        path: "/forget-password",
+        element: <LoggedIn />,
+        children: [
+          {
+            path: "",
+            element: <ForgetPassword />,
           },
         ],
       },

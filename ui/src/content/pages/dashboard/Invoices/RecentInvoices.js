@@ -11,7 +11,7 @@ import {
   IconButton,
   TextField,
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import EditIcon from '@mui/icons-material/Edit';
 
 // import { apiCall } from 'src/utils/axios';
 // import { generateColFilters } from 'src/utils/table';
@@ -33,7 +33,7 @@ function RecentInvoices() {
       },
       {
         accessorFn: (row) => new Date(row.date),
-        accessorKey: "created_on",
+        accessorKey: "created_at",
         header: "Created On",
         filterFn: "lessThanOrEqualTo",
         sortingFn: "datetime",
@@ -59,7 +59,7 @@ function RecentInvoices() {
       },
       {
         accessorFn: (row) => new Date(row.date),
-        accessorKey: "updated_on",
+        accessorKey: "updated_at",
         header: "Updated On",
         filterFn: "lessThanOrEqualTo",
         sortingFn: "datetime",
@@ -189,7 +189,7 @@ function RecentInvoices() {
             <Tooltip arrow placement="left" title="View Details">
               <span>
                 <IconButton onClick={() => {}}>
-                  <DashboardIcon />
+                  <EditIcon />
                 </IconButton>
               </span>
             </Tooltip>

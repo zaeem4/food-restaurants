@@ -1,11 +1,10 @@
 {
-  "name": "visewealth-admin-dashboard",
-  "version": "0.0.2",
-  "title": "Vise Wealth Admin Dashboard",
+  "name": "food-app",
+  "version": "1.0.0",
+  "title": "food-app",
   "description": "",
   "author": {
-    "name": "zaeem1169@gmail.com",
-    "url": "https://visewealth.com"
+    "name": "zaeem1169@gmail.com"
   },
   "private": false,
   "dependencies": {
@@ -24,6 +23,7 @@
     "formik": "^2.2.9",
     "history": "5.3.0",
     "material-react-table": "^1.5.4",
+    "mui-one-time-password-input": "^1.1.2",
     "notistack": "^2.0.8",
     "nprogress": "0.2.0",
     "numeral": "2.0.6",
@@ -42,6 +42,7 @@
     "redux-state-sync": "^3.1.4",
     "stylis": "4.1.1",
     "stylis-plugin-rtl": "2.1.1",
+    "sweetalert2": "^11.7.20",
     "web-vitals": "2.1.4",
     "yup": "^0.32.11"
   },
