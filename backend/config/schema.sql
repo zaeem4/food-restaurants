@@ -1,19 +1,19 @@
-CREATE TABLE users (
-  id bigserial PRIMARY KEY,
-  user_name varchar UNIQUE NOT NULL,
-  email varchar UNIQUE NOT NULL,
-  password varchar,
-  role varchar default(NULL),
-  updated_at timestamp,
-  created_at timestamp
+CREATE TABLE "users" (
+  "id" bigserial PRIMARY KEY,
+  "user_name" varchar UNIQUE NOT NULL,
+  "email" varchar UNIQUE NOT NULL,
+  "password" varchar,
+  "role" varchar default(NULL),
+  "updated_at" timestamp,
+  "created_at" timestamp
 );
 
-CREATE TABLE permissions (
-  id bigserial PRIMARY KEY,
-  role  varchar UNIQUE NOT NULL,
-  scope json NOT NULL,
-  updated_at timestamp,
-  created_at timestamp
+CREATE TABLE "permissions" (
+  "id" bigserial PRIMARY KEY,
+  "role"  varchar UNIQUE NOT NULL,
+  "scope" json NOT NULL,
+  "updated_at" timestamp,
+  "created_at" timestamp
 );
 
 
@@ -67,12 +67,13 @@ CREATE TABLE invoices (
 
 CREATE TABLE companies (
     id bigserial PRIMARY KEY,
+    user_id bigint REFERENCES users(id),
     address VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
     tax_number VARCHAR(20) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     owner VARCHAR(255) NOT NULL,
-    shifts JSONB,
+    shifts VARCHAR(255) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
@@ -87,3 +88,6 @@ CREATE TABLE menus (
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO "permissions" ("id","role","scope","updated_at","created_at") VALUES (1,'admin','{"dashboard":true,"restaurants":true,"meals":true,"invoices":true,"companies":true,"menus":true,"orders":false,"employees":false,"reports":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+INSERT INTO "permissions" ("id","role","scope","updated_at","created_at") VALUES (2,'restaurant','{"dashboard":false,"restaurants":false,"meals":false,"invoices":true,"companies":true,"menus":true,"orders":false,"employees":false,"reports":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+INSERT INTO "permissions" ("id","role","scope","updated_at","created_at") VALUES (3,'company','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":true,"orders":true,"employees":true,"reports":true}','2023-07-31 15:55:20','2023-07-31 15:55:20');

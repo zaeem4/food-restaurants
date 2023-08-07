@@ -174,82 +174,106 @@ const SubMenuWrapper = styled(Box)(
 `
 );
 
-function SidebarMenu() {
+function SidebarMenu({ user }) {
   const { closeSidebar } = useContext(SidebarContext);
+  const navbar = [];
+
+  const sidebarMenu = {
+    dashboard: (
+      <ListItem component="div" key="dashboard">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/home"
+          startIcon={<AssessmentIcon />}
+        >
+          Dashbaord
+        </Button>
+      </ListItem>
+    ),
+    restaurants: (
+      <ListItem component="div" key="restaurants">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/restaurants"
+          startIcon={<AssessmentIcon />}
+        >
+          Restaurants
+        </Button>
+      </ListItem>
+    ),
+    meals: (
+      <ListItem component="div" key="meals">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/meals-and-ingredients"
+          startIcon={<AssessmentIcon />}
+        >
+          Meals & Ingredients
+        </Button>
+      </ListItem>
+    ),
+    invoices: (
+      <ListItem component="div" key="invoices">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/invoices"
+          startIcon={<AssessmentIcon />}
+        >
+          Invoices
+        </Button>
+      </ListItem>
+    ),
+    companies: (
+      <ListItem component="div" key="companies">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/companies"
+          startIcon={<AssessmentIcon />}
+        >
+          Companies
+        </Button>
+      </ListItem>
+    ),
+    menus: (
+      <ListItem component="div" key="menus">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/menus"
+          startIcon={<AssessmentIcon />}
+        >
+          Menus
+        </Button>
+      </ListItem>
+    ),
+    orders: false,
+    employees: false,
+    reports: false,
+  };
+
+  Object.keys(user?.permissions).forEach((access) => {
+    if (user.permissions[access] && sidebarMenu[access]) {
+      navbar.push(sidebarMenu[access]);
+    }
+  });
 
   return (
     <>
       <MenuWrapper>
         <List component="div">
           <SubMenuWrapper>
-            <List component="div">
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard/home"
-                  startIcon={<AssessmentIcon />}
-                >
-                  Dashbaord
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard/restaurants"
-                  startIcon={<AssessmentIcon />}
-                >
-                  Restaurants
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard/meals-and-ingredients"
-                  startIcon={<AssessmentIcon />}
-                >
-                  Meals & Ingredients
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard/invoices"
-                  startIcon={<AssessmentIcon />}
-                >
-                  Invoices
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard/companies"
-                  startIcon={<AssessmentIcon />}
-                >
-                  Companies
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboard/menus"
-                  startIcon={<AssessmentIcon />}
-                >
-                  Menus
-                </Button>
-              </ListItem>
-            </List>
+            <List component="div">{navbar}</List>
           </SubMenuWrapper>
         </List>
       </MenuWrapper>

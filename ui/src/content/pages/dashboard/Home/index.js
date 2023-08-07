@@ -1,29 +1,49 @@
 import { lazy, useEffect, useState } from "react";
 import { Grid, Container, Card, Typography, CardHeader } from "@mui/material";
 import { Box } from "@mui/system";
-// import { apiCall } from 'src/utils/axios';
+
+import { apiGet } from "src/utils/axios";
 
 const Page = lazy(() => import("src/components/Page"));
-const PageTitleWrapper = lazy(() => import('src/components/PageTitleWrapper'));
-const PageHeader = lazy(() => import('./PageHeader'));
+const PageTitleWrapper = lazy(() => import("src/components/PageTitleWrapper"));
+const PageHeader = lazy(() => import("./PageHeader"));
 
 function Home() {
   const [data, setData] = useState({
     totalRestaurant: 0,
+    lastRestaurantCreated: new Date().toLocaleString(),
     totalEmployees: 0,
-    totalcompanies: 0,
-    totalturnover: 0,
+    totalCompanies: 0,
+    lastCompanyCreated: new Date().toLocaleString(),
+    totalTurnover: 0,
   });
 
   useEffect(() => {
-    const fetchData = async () => {};
+    const fetchData = async () => {
+      const response = await apiGet("/admin/total-counts");
+
+      if (response.success) {
+        setData({
+          ...data,
+          totalRestaurant: response.totalCount.restaurant_count,
+          totalCompanies: response.totalCount.company_count,
+          lastRestaurantCreated: new Date(
+            response.totalCount.last_restaurant_created
+          ).toLocaleString(),
+          lastCompanyCreated: new Date(
+            response.totalCount.last_company_created
+          ).toLocaleString(),
+        });
+      }
+    };
 
     fetchData();
+
     return () => {
       setData({
-        totalturnover: 0,
+        totalTurnover: 0,
         totalRestaurant: 0,
-        totalcompanies: 0,
+        totalCompanies: 0,
         totalEmployees: 0,
       });
     };
@@ -58,7 +78,7 @@ function Home() {
                   </Typography>
                   <br />
                   <Typography variant="caption" gutterBottom>
-                    Last Created: <b> {`${new Date().toDateString()}`} </b>
+                    Last Created: <b> {data.lastRestaurantCreated} </b>
                   </Typography>
                 </Box>
               </Card>
@@ -68,11 +88,11 @@ function Home() {
                 <CardHeader title="Total Companies" />
                 <Box px={2}>
                   <Typography variant="h2" textAlign="center">
-                    {data.totalcompanies}
+                    {data.totalCompanies}
                   </Typography>
                   <br />
                   <Typography variant="caption" gutterBottom>
-                    Last Created: <b> {`${new Date().toDateString()}`} </b>
+                    Last Created: <b> {data.lastCompanyCreated} </b>
                   </Typography>
                 </Box>
               </Card>
@@ -82,7 +102,7 @@ function Home() {
                 <CardHeader title="Total Turnover" />
                 <Box px={2}>
                   <Typography variant="h2" textAlign="center">
-                    {data.totalturnover}
+                    {data.totalTurnover}
                   </Typography>
                   <br />
                   <Typography variant="caption" gutterBottom>

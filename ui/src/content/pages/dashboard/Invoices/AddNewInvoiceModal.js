@@ -15,13 +15,13 @@ import { LoadingButton } from "@mui/lab";
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewInvoiceModal = ({ open, columns, onClose, onSubmit }) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        acc[column.accessorKey] = null;
+        acc[column.accessorKey] = "";
       }
       return acc;
     }, {})
@@ -31,7 +31,7 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
     e.preventDefault();
     try {
       setSpinner(true);
-      const data = await apiPost(`/admin/companies/create`, values);
+      const data = await apiPost(`/admin/invoice/create`, values);
 
       if (data.success) {
         onSubmit(values);
@@ -40,7 +40,6 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
         Swal.fire({
           icon: "success",
           title: "Successfully created",
-          text: `Password is ${data.password}`,
         });
       } else {
         Swal.fire({
@@ -60,10 +59,9 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
       setSpinner(false);
     }
   };
-
   return (
     <Dialog open={open}>
-      <DialogTitle>Add New Company</DialogTitle>
+      <DialogTitle>Add New Invoice</DialogTitle>
       <DialogContent sx={{ paddingTop: "6px!important" }}>
         <Box
           component="form"
@@ -120,4 +118,4 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
   );
 };
 
-export default AddNewCompanyModal;
+export default AddNewInvoiceModal;

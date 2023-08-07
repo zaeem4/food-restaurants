@@ -49,10 +49,32 @@ const role = async (req, res) => {
     if (permissions.rows.length > 0) {
       return res.json({ success: true });
     }
+
+    return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || admin(register).js | ${error}`);
     return res.json({ success: false, error: error });
   }
 };
 
-module.exports = { register, role };
+const getTotalCounts = async (req, res) => {
+  try {
+    const query = `
+      SELECT
+        (SELECT COUNT(*) FROM restaurants) AS restaurant_count,
+        (SELECT COUNT(*) FROM companies) AS company_count,
+        (SELECT MAX(created_at) FROM restaurants) AS last_restaurant_created,
+        (SELECT MAX(created_at) FROM companies) AS last_company_created;
+    `;
+    const result = await Pool.query(query);
+    if (result.rows) {
+      return res.json({ success: true, totalCount: result.rows[0] });
+    }
+    return res.json({ success: false, error: "error in db" });
+  } catch (error) {
+    console.log(`400 || admin(getTotalCounts).js | ${error}`);
+    return res.json({ success: false, error: error });
+  }
+};
+
+module.exports = { register, role, getTotalCounts };

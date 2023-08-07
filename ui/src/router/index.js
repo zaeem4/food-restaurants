@@ -7,6 +7,7 @@ import SuspenseLoader from "src/components/SuspenseLoader";
 
 import { LoggedIn } from "src/gaurds/LoggedIn";
 import { Authorized } from "src/gaurds/Authorized";
+import { useSelector } from "react-redux";
 
 const Loader = (Component) => (props) =>
   (
@@ -18,6 +19,7 @@ const Loader = (Component) => (props) =>
 // Pages
 
 const Login = Loader(lazy(() => import("src/content/pages/Static/Login")));
+
 const ForgetPassword = Loader(
   lazy(() => import("src/content/pages/Static/ForgetPassword"))
 );
@@ -45,6 +47,9 @@ const Menus = Loader(lazy(() => import("src/content/pages/dashboard/Menus")));
 const Status404 = Loader(
   lazy(() => import("src/content/pages/Status/Status404"))
 );
+const Status403 = Loader(
+  lazy(() => import("src/content/pages/Status/Status403"))
+);
 const Status500 = Loader(
   lazy(() => import("src/content/pages/Status/Status500"))
 );
@@ -55,145 +60,181 @@ const StatusMaintenance = Loader(
   lazy(() => import("src/content/pages/Status/Maintenance"))
 );
 
-const Router = [
-  {
-    path: "",
-    element: <BaseLayout />,
-    children: [
-      {
-        path: "",
-        element: <Navigate to="/dashboard" />,
-      },
-      {
-        path: "/login",
-        element: <LoggedIn />,
-        children: [
-          {
-            path: "",
-            element: <Login />,
-          },
-        ],
-      },
-      {
-        path: "/forget-password",
-        element: <LoggedIn />,
-        children: [
-          {
-            path: "",
-            element: <ForgetPassword />,
-          },
-        ],
-      },
-      {
-        path: "status",
-        children: [
-          {
-            path: "",
-            element: <Navigate to="404" replace />,
-          },
-          {
-            path: "404",
-            element: <Status404 />,
-          },
-          {
-            path: "500",
-            element: <Status500 />,
-          },
-          {
-            path: "maintenance",
-            element: <StatusMaintenance />,
-          },
-          {
-            path: "coming-soon",
-            element: <StatusComingSoon />,
-          },
-        ],
-      },
-      {
-        path: "*",
-        element: <Status404 />,
-      },
-    ],
-  },
-  {
-    path: "dashboard",
-    element: <Authorized />,
-    children: [
-      {
-        path: "",
-        element: <Navigate to="home" replace />,
-      },
-      {
-        path: "home",
-        element: <Home />,
-      },
-      {
-        path: "restaurants",
-        children: [
-          {
-            path: "",
-            element: <Navigate to="lists" replace />,
-          },
-          {
-            path: "lists",
-            element: <Restaurants />,
-          },
-        ],
-      },
-      {
-        path: "meals-and-ingredients",
-        children: [
-          {
-            path: "",
-            element: <Navigate to="lists" replace />,
-          },
-          {
-            path: "lists",
-            element: <MealsAndIngredients />,
-          },
-        ],
-      },
-      {
-        path: "invoices",
-        children: [
-          {
-            path: "",
-            element: <Navigate to="lists" replace />,
-          },
-          {
-            path: "lists",
-            element: <Invoices />,
-          },
-        ],
-      },
-      {
-        path: "companies",
-        children: [
-          {
-            path: "",
-            element: <Navigate to="lists" replace />,
-          },
-          {
-            path: "lists",
-            element: <Companies />,
-          },
-        ],
-      },
-      {
-        path: "menus",
-        children: [
-          {
-            path: "",
-            element: <Navigate to="lists" replace />,
-          },
-          {
-            path: "lists",
-            element: <Menus />,
-          },
-        ],
-      },
-    ],
-  },
-];
+const getRoute = () => {
+  const user = useSelector((state) => state.user.value);
 
-export default Router;
+  return [
+    {
+      path: "",
+      element: <BaseLayout />,
+      children: [
+        {
+          path: "",
+          element: <Navigate to="/dashboard" />,
+        },
+        {
+          path: "/login",
+          element: <LoggedIn />,
+          children: [
+            {
+              path: "",
+              element: <Login />,
+            },
+          ],
+        },
+        {
+          path: "/forget-password",
+          element: <LoggedIn />,
+          children: [
+            {
+              path: "",
+              element: <ForgetPassword />,
+            },
+          ],
+        },
+        {
+          path: "status",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="404" replace />,
+            },
+            {
+              path: "403",
+              element: <Status403 />,
+            },
+            {
+              path: "404",
+              element: <Status404 />,
+            },
+            {
+              path: "500",
+              element: <Status500 />,
+            },
+            {
+              path: "maintenance",
+              element: <StatusMaintenance />,
+            },
+            {
+              path: "coming-soon",
+              element: <StatusComingSoon />,
+            },
+          ],
+        },
+        {
+          path: "*",
+          element: <Status404 />,
+        },
+      ],
+    },
+    {
+      path: "dashboard",
+      element: <Authorized />,
+      children: [
+        {
+          path: "",
+          element: <Navigate to="home" replace />,
+        },
+        {
+          path: "home",
+          element: user.permissions?.dashboard ? (
+            <Home />
+          ) : user.role === "restaturant" ? (
+            <Navigate to="/restaurants" />
+          ) : user.role === "company" ? (
+            <Navigate to="/menus" />
+          ) : (
+            <Navigate to="status/403" />
+          ),
+        },
+        {
+          path: "restaurants",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.restaurants ? (
+                <Restaurants />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "meals-and-ingredients",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.meals ? (
+                <MealsAndIngredients />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "invoices",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.invoices ? (
+                <Invoices />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "companies",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.companies ? (
+                <Companies />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "menus",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.menus ? (
+                <Menus />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+      ],
+    },
+  ];
+};
+
+export default getRoute;

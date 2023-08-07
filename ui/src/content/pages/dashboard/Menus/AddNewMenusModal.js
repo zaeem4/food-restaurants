@@ -12,6 +12,9 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
+import Swal from "sweetalert2";
+import { apiPost } from "src/utils/axios";
+
 const AddNewMenusModal = ({ open, columns, onClose, onSubmit }) => {
   const [spinner, setSpinner] = useState(false);
 
@@ -24,10 +27,37 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit }) => {
     }, {})
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(values);
-    onClose();
+    try {
+      setSpinner(true);
+      const data = await apiPost(`/admin/menus/create`, values);
+
+      if (data.success) {
+        onSubmit(values);
+        setSpinner(false);
+        onClose();
+        Swal.fire({
+          icon: "success",
+          title: "Successfully created",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+
+        setSpinner(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setSpinner(false);
+    }
   };
 
   return (

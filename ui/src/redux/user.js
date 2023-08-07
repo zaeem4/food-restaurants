@@ -4,7 +4,7 @@ const initialStateValue = {
   userName: "",
   email: "",
   role: "",
-  scope: {
+  permissions: {
     dashboard: false,
     restaurants: false,
     meals: false,

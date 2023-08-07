@@ -1,7 +1,6 @@
 import { useContext } from "react";
-// import { NavLink as RouterLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useDispatch } from "react-redux";
 import Scrollbar from "src/components/Scrollbar";
 import { SidebarContext } from "src/contexts/SidebarContext";
 
@@ -15,11 +14,9 @@ import {
   lighten,
   darken,
 } from "@mui/material";
-
 import LockOpenTwoToneIcon from "@mui/icons-material/LockOpenTwoTone";
 
 import Logo from "src/components/Logo";
-
 import SidebarMenu from "./SidebarMenu";
 
 import { clearUser } from "src/redux/user";
@@ -38,16 +35,19 @@ const SidebarWrapper = styled(Box)(
 );
 
 function Sidebar() {
+  const theme = useTheme();
   const dispatch = useDispatch();
 
+  const user = useSelector((state) => state.user.value);
+
   const { sidebarToggle, toggleSidebar } = useContext(SidebarContext);
-  const closeSidebar = () => toggleSidebar();
-  const theme = useTheme();
 
   const signout = () => {
     dispatch(clearUser());
     logout();
   };
+
+  const closeSidebar = () => toggleSidebar();
 
   return (
     <>
@@ -85,20 +85,8 @@ function Sidebar() {
               />
             </Box>
           </Box>
-          {/* <Divider
-            sx={{
-              mt: theme.spacing(3),
-              mx: theme.spacing(2),
-              background: theme.colors.alpha.trueWhite[10],
-            }}
-          /> */}
-          <SidebarMenu />
+          <SidebarMenu user={user} />
         </Scrollbar>
-        {/* <Divider
-          sx={{
-            background: theme.colors.alpha.trueWhite[10],
-          }}
-        /> */}
         <Box sx={{ m: 1 }}>
           <Button color="primary" fullWidth onClick={signout}>
             <LockOpenTwoToneIcon sx={{ mr: 1 }} />
@@ -126,23 +114,11 @@ function Sidebar() {
         >
           <Scrollbar>
             <Box mt={2}>
-              <Box
-                mx={2}
-                // sx={{
-                //   width: 52,
-                // }}
-              >
+              <Box mx={2}>
                 <Logo />
               </Box>
             </Box>
-            {/* <Divider
-              sx={{
-                mt: theme.spacing(3),
-                mx: theme.spacing(2),
-                background: theme.colors.alpha.trueWhite[10],
-              }}
-            /> */}
-            <SidebarMenu />
+            <SidebarMenu user={user} />
           </Scrollbar>
         </SidebarWrapper>
       </Drawer>

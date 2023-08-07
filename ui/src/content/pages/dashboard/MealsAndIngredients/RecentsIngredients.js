@@ -3,8 +3,10 @@ import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-
 // import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
+
+import { apiGet } from "src/utils/axios";
 
 import AddNewIngredientsModal from "./AddNewIngredientsModal.js";
 
@@ -19,55 +21,27 @@ function RecentIngredients() {
 
   const fetchIngredients = async () => {
     try {
-      // if (!data.length) {
-      //   setIsLoading(true);
-      // } else {
-      //   setIsRefetching(true);
-      // }
+      setIsLoading(true);
 
-      // const response = await apiCall('getUsers', {
-      //   query: `query($page: Int, $limit: Int, $columnFilters: [ColumnFilter], $globalFilter: String, $sorting: sortBy){
-      //             getUsers(page: $page, limit: $limit, columnFilters: $columnFilters, globalFilter: $globalFilter, sorting: $sorting) {
-      //               body
-      //               success
-      //               total
-      //               users {
-      //                 email
-      //                 name
-      //                 walletAddressDB
-      //                 profilePicture
-      //                 ReferredBy
-      //               }
-      //             }
-      //           }`,
-      //   variables: {
-      //     page: pagination.pageIndex,
-      //     limit: pagination.pageSize,
-      //     columnFilters: generateColFilters(columnFilters, columns),
-      //     globalFilter: globalFilter,
-      //     sorting: sorting.length > 0 ? sorting[0] : null
-      //   }
-      // });
-      // if (response.success) {
-      //   setData(response.users);
-      //   setRowCount(response.total);
-      // } else {
-      //   setIsError(true);
-      //   setIsLoading(false);
-      //   return;
-      // }
-      setData([]);
+      const response = await apiGet("/admin/ingredients");
+      if (response.success) {
+        setData(response.ingredients);
+      } else {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      }
       setIsError(false);
       setIsLoading(false);
-      // setIsRefetching(false);
     } catch (error) {
       setIsError(true);
       setIsLoading(false);
-      // console.log(error);
     }
   };
 
-  const handleCreateNewRow = (values) => {};
+  const handleCreateNewRow = (values) => {
+    fetchIngredients();
+  };
 
   useEffect(() => {
     fetchIngredients();
@@ -86,14 +60,14 @@ function RecentIngredients() {
         createAble: true,
       },
       {
-        accessorKey: "discription",
-        header: "Discription",
+        accessorKey: "description",
+        header: "Description",
         size: 150,
         createAble: true,
       },
       {
-        accessorKey: "meal_id",
-        header: "Meal ID",
+        accessorKey: "meals",
+        header: "Meals ID",
         size: 150,
         createAble: true,
       },
@@ -156,7 +130,7 @@ function RecentIngredients() {
         enableStickyFooter
         enableRowActions
         positionToolbarAlertBanner="bottom"
-        positionActionsColumn={"last"}
+        // positionActionsColumn={"last"}
         initialState={{
           showGlobalFilter: true,
         }}

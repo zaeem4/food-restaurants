@@ -3,8 +3,10 @@ import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-
 // import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
+
+import { apiGet } from "src/utils/axios";
 
 import AddNewMealsModal from "./AddNewMealsModal.js";
 
@@ -19,55 +21,27 @@ function RecentMeals() {
 
   const fetchMeals = async () => {
     try {
-      // if (!data.length) {
-      //   setIsLoading(true);
-      // } else {
-      //   setIsRefetching(true);
-      // }
+      setIsLoading(true);
 
-      // const response = await apiCall('getUsers', {
-      //   query: `query($page: Int, $limit: Int, $columnFilters: [ColumnFilter], $globalFilter: String, $sorting: sortBy){
-      //             getUsers(page: $page, limit: $limit, columnFilters: $columnFilters, globalFilter: $globalFilter, sorting: $sorting) {
-      //               body
-      //               success
-      //               total
-      //               users {
-      //                 email
-      //                 name
-      //                 walletAddressDB
-      //                 profilePicture
-      //                 ReferredBy
-      //               }
-      //             }
-      //           }`,
-      //   variables: {
-      //     page: pagination.pageIndex,
-      //     limit: pagination.pageSize,
-      //     columnFilters: generateColFilters(columnFilters, columns),
-      //     globalFilter: globalFilter,
-      //     sorting: sorting.length > 0 ? sorting[0] : null
-      //   }
-      // });
-      // if (response.success) {
-      //   setData(response.users);
-      //   setRowCount(response.total);
-      // } else {
-      //   setIsError(true);
-      //   setIsLoading(false);
-      //   return;
-      // }
-      setData([]);
+      const response = await apiGet("/admin/meals");
+      if (response.success) {
+        setData(response.meals);
+      } else {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      }
       setIsError(false);
       setIsLoading(false);
-      // setIsRefetching(false);
     } catch (error) {
       setIsError(true);
       setIsLoading(false);
-      // console.log(error);
     }
   };
 
-  const handleCreateNewRow = (values) => {};
+  const handleCreateNewRow = (values) => {
+    fetchMeals();
+  };
 
   useEffect(() => {
     fetchMeals();
@@ -77,59 +51,57 @@ function RecentMeals() {
     };
   }, []);
 
-  
-const columns = useMemo(
-  () => [
-    {
-      accessorKey: "name",
-      header: "name",
-      size: 150,
-      createAble: true,
-    },
-    {
-      accessorKey: "discription",
-      header: "Discription",
-      size: 150,
-      createAble: true,
-    },
-    {
-      accessorKey: "price",
-      header: "Price",
-      size: 200,
-      createAble: true,
-    },
-    {
-      accessorKey: "ingredients",
-      header: "Ingredients",
-      size: 150,
-      createAble: true,
-    },
-    {
-      accessorKey: "restaurant_id",
-      header: "Restaurant ID",
-      size: 200,
-      createAble: true,
-    },
-    {
-      accessorFn: (row) => new Date(row.created_at),
-      Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-      accessorKey: "created_at",
-      header: "Created On",
-      size: 150,
-      createAble: false,
-    },
-    {
-      accessorFn: (row) => new Date(row.updated_at),
-      Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-      accessorKey: "updated_at",
-      header: "Updated On",
-      size: 150,
-      createAble: false,
-    },
-  ],
-  []
-);
-
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "name",
+        size: 150,
+        createAble: true,
+      },
+      {
+        accessorKey: "description",
+        header: "Description",
+        size: 250,
+        createAble: true,
+      },
+      {
+        accessorKey: "price",
+        header: "Price",
+        size: 200,
+        createAble: true,
+      },
+      {
+        accessorKey: "ingredient_names",
+        header: "Ingredients",
+        size: 200,
+        createAble: false,
+      },
+      {
+        accessorKey: "restaurant_id",
+        header: "Restaurant ID",
+        size: 50,
+        createAble: true,
+      },
+      {
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
+        accessorKey: "created_at",
+        header: "Created On",
+        size: 150,
+        createAble: false,
+      },
+      {
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
+        accessorKey: "updated_at",
+        header: "Updated On",
+        size: 150,
+        createAble: false,
+      },
+    ],
+    []
+  );
 
   return (
     <Card>
@@ -170,7 +142,7 @@ const columns = useMemo(
         enableStickyFooter
         enableRowActions
         positionToolbarAlertBanner="bottom"
-        positionActionsColumn={"last"}
+        // positionActionsColumn={"last"}
         initialState={{
           showGlobalFilter: true,
         }}

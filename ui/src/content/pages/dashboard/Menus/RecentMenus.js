@@ -4,14 +4,21 @@ import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import { Box, Button, Card, Tooltip, IconButton, Toolbar, TextField } from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
+import {
+  Box,
+  Button,
+  Card,
+  Tooltip,
+  IconButton,
+  Toolbar,
+  TextField,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
 
-import AddNewMenusModal from "./AddNewMenusModal.js";
+import { apiGet } from "src/utils/axios";
 
-// import { apiCall } from 'src/utils/axios';
-// import { generateColFilters } from 'src/utils/table';
+import AddNewMenusModal from "./AddNewMenusModal.js";
 
 function RecentMenus() {
   const tableInstanceRef = useRef(null);
@@ -24,55 +31,27 @@ function RecentMenus() {
 
   const fetchMenus = async () => {
     try {
-      // if (!data.length) {
-      //   setIsLoading(true);
-      // } else {
-      //   setIsRefetching(true);
-      // }
+      setIsLoading(true);
 
-      // const response = await apiCall('getUsers', {
-      //   query: `query($page: Int, $limit: Int, $columnFilters: [ColumnFilter], $globalFilter: String, $sorting: sortBy){
-      //             getUsers(page: $page, limit: $limit, columnFilters: $columnFilters, globalFilter: $globalFilter, sorting: $sorting) {
-      //               body
-      //               success
-      //               total
-      //               users {
-      //                 email
-      //                 name
-      //                 walletAddressDB
-      //                 profilePicture
-      //                 ReferredBy
-      //               }
-      //             }
-      //           }`,
-      //   variables: {
-      //     page: pagination.pageIndex,
-      //     limit: pagination.pageSize,
-      //     columnFilters: generateColFilters(columnFilters, columns),
-      //     globalFilter: globalFilter,
-      //     sorting: sorting.length > 0 ? sorting[0] : null
-      //   }
-      // });
-      // if (response.success) {
-      //   setData(response.users);
-      //   setRowCount(response.total);
-      // } else {
-      //   setIsError(true);
-      //   setIsLoading(false);
-      //   return;
-      // }
-      setData([]);
+      const response = await apiGet("/admin/menus");
+      if (response.success) {
+        setData(response.menus);
+      } else {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      }
       setIsError(false);
       setIsLoading(false);
-      // setIsRefetching(false);
     } catch (error) {
       setIsError(true);
       setIsLoading(false);
-      // console.log(error);
     }
   };
 
-  const handleCreateNewRow = (values) => {};
+  const handleCreateNewRow = (values) => {
+    fetchMenus();
+  };
 
   useEffect(() => {
     fetchMenus();
@@ -92,8 +71,8 @@ function RecentMenus() {
         enableColumnFilter: false,
       },
       {
-        accessorKey: "discription",
-        header: "Discription",
+        accessorKey: "description",
+        header: "Description",
         size: 150,
         createAble: true,
         enableColumnFilter: false,
@@ -113,7 +92,7 @@ function RecentMenus() {
         enableColumnFilter: false,
       },
       {
-        accessorFn: (row) => new Date(row.date),
+        accessorFn: (row) => new Date(row.created_at),
         accessorKey: "created_at",
         header: "Created On",
         filterFn: "lessThanOrEqualTo",
@@ -140,7 +119,7 @@ function RecentMenus() {
         createAble: false,
       },
       {
-        accessorFn: (row) => new Date(row.date),
+        accessorFn: (row) => new Date(row.updated_at),
         accessorKey: "updated_at",
         header: "Updated On",
         filterFn: "lessThanOrEqualTo",
@@ -207,7 +186,7 @@ function RecentMenus() {
         enableStickyFooter
         enableRowActions
         positionToolbarAlertBanner="bottom"
-        positionActionsColumn={"last"}
+        // positionActionsColumn={"last"}
         enableTopToolbar={false}
         initialState={{
           showGlobalFilter: true,

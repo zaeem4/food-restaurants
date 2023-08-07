@@ -1,10 +1,10 @@
 {
-  "theme_color": "#1975ff",
-  "background_color": "#f2f5f9",
+  "theme_color": "#06A759",
+  "background_color": "#FFFFFF",
   "display": "standalone",
   "start_url": ".",
-  "short_name": "Visewealth",
-  "name": "Visewealth Admin Dashboard",
+  "short_name": "Food App",
+  "name": "Food App",
   "icons": [
     {
       "src": "static/images/favicon/icon-192x192.png",
