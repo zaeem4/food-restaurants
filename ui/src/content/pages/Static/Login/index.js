@@ -43,7 +43,10 @@ const ContentStyle = styled("div")(({ theme }) => ({
 export default function Login() {
   return (
     <Page title="Login">
-      <Backdrop sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Backdrop
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={false}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
       <RootStyle>

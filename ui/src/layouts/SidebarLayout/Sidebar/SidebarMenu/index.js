@@ -257,7 +257,19 @@ function SidebarMenu({ user }) {
         </Button>
       </ListItem>
     ),
-    orders: false,
+    orders: (
+      <ListItem component="div" key="orders">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/orders"
+          startIcon={<AssessmentIcon />}
+        >
+          Orders
+        </Button>
+      </ListItem>
+    ),
     employees: false,
     reports: false,
   };

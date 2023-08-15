@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import BaseLayout from "src/layouts/BaseLayout";
 
@@ -7,7 +8,6 @@ import SuspenseLoader from "src/components/SuspenseLoader";
 
 import { LoggedIn } from "src/gaurds/LoggedIn";
 import { Authorized } from "src/gaurds/Authorized";
-import { useSelector } from "react-redux";
 
 const Loader = (Component) => (props) =>
   (
@@ -40,6 +40,7 @@ const Companies = Loader(
   lazy(() => import("src/content/pages/dashboard/Companies"))
 );
 const Menus = Loader(lazy(() => import("src/content/pages/dashboard/Menus")));
+const Orders = Loader(lazy(() => import("src/content/pages/dashboard/Orders")));
 // Components
 
 // Status
@@ -139,10 +140,12 @@ const getRoute = () => {
           path: "home",
           element: user.permissions?.dashboard ? (
             <Home />
-          ) : user.role === "restaturant" ? (
-            <Navigate to="/restaurants" />
+          ) : user.role === "restaurant" ? (
+            <Navigate to="/dashboard/menus" />
           ) : user.role === "company" ? (
-            <Navigate to="/menus" />
+            <Navigate to="/dashboard/menus" />
+          ) : user.role === "rider" ? (
+            <Navigate to="/dashboard/orders" />
           ) : (
             <Navigate to="status/403" />
           ),
@@ -226,6 +229,23 @@ const getRoute = () => {
               path: "lists",
               element: user.permissions?.menus ? (
                 <Menus />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "orders",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.orders ? (
+                <Orders />
               ) : (
                 <Navigate to="status/403" />
               ),

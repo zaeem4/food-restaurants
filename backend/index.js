@@ -13,6 +13,9 @@ const mealsAndIngredientController = require("./controller/mealandingredient");
 const invoiceController = require("./controller/invoice");
 const companyController = require("./controller/company");
 const menuController = require("./controller/menu");
+const orderController = require("./controller/order");
+
+const { AuthMiddleware } = require("./niddleware/verify-token");
 
 const app = express();
 app.use(cors());
@@ -21,6 +24,8 @@ app.use(express.json());
 app.post("/api/login", LoginController.verify);
 
 app.group("/api/admin", (router) => {
+  router.use(AuthMiddleware);
+
   router.post("/register", adminController.register);
 
   router.get("/role", adminController.role);
@@ -49,8 +54,12 @@ app.group("/api/admin", (router) => {
   router.get("/menus", menuController.get);
   router.post("/menus/create", menuController.create);
 
-  router.get("/total-counts", adminController.getTotalCounts);
+  router.get("/orders", orderController.getOrdersWithMenusAndIngredients);
+  router.post("/orders/create", orderController.create);
 
+  router.get("/invoices", orderController.getInvoices);
+
+  router.get("/total-counts", adminController.getTotalCounts);
 });
 
 app.listen(process.env.SERVER_PORT, () => {

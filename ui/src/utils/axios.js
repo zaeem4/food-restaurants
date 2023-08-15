@@ -8,7 +8,7 @@ const axiosInstance = axios.create();
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 402) {
       Swal.fire(
         "Oops...",
         "Your Session Has Expired Please Login Again!",

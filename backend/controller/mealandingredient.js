@@ -49,12 +49,12 @@ async function insertIngredient(req, res) {
     if (ingredientResult.rows.length > 0) {
       const ingredientId = ingredientResult.rows[0].id;
 
-      const mealsArray = meals.split(",");
+      const mealsArray = meals.split(",").map(mealId => parseInt(mealId));
 
       for (const mealId of mealsArray) {
         const mealIngredientQuery = `
-        INSERT INTO mealsingredients (meal_id, ingredient_id)
-        VALUES ($1, $2);
+          INSERT INTO mealsingredients (meal_id, ingredient_id)
+          VALUES ($1, $2);
       `;
         const mealIngredientValues = [mealId, ingredientId];
         await Pool.query(mealIngredientQuery, mealIngredientValues);

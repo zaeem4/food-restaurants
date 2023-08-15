@@ -33,7 +33,7 @@ function RecentInvoices() {
         enableColumnFilter: false,
       },
       {
-        accessorFn: (row) => new Date(row.date),
+        accessorFn: (row) => new Date(row.created_at),
         accessorKey: "created_at",
         header: "Created On",
         filterFn: "lessThanOrEqualTo",
@@ -59,7 +59,7 @@ function RecentInvoices() {
         ),
       },
       {
-        accessorFn: (row) => new Date(row.date),
+        accessorFn: (row) => new Date(row.updated_at),
         accessorKey: "updated_at",
         header: "Updated On",
         filterFn: "lessThanOrEqualTo",
