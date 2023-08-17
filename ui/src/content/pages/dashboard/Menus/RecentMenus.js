@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
 
@@ -19,8 +20,11 @@ import MaterialReactTable from "material-react-table";
 import { apiGet } from "src/utils/axios";
 
 import AddNewMenusModal from "./AddNewMenusModal.js";
+import EditMenusModal from "./EditMenusModal.js";
 
 function RecentMenus() {
+  const user = useSelector((state) => state.user.value);
+
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
@@ -28,6 +32,8 @@ function RecentMenus() {
   const [isError, setIsError] = useState(false);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [currentRow, setCurrentRow] = useState({});
 
   const fetchMenus = async () => {
     try {
@@ -68,6 +74,7 @@ function RecentMenus() {
         header: "Name",
         size: 150,
         createAble: true,
+        enableEditing: true,
         enableColumnFilter: false,
       },
       {
@@ -75,6 +82,7 @@ function RecentMenus() {
         header: "Description",
         size: 150,
         createAble: true,
+        enableEditing: true,
         enableColumnFilter: false,
       },
       {
@@ -82,6 +90,7 @@ function RecentMenus() {
         header: "Meal ID",
         size: 150,
         createAble: true,
+        enableEditing: true,
         enableColumnFilter: false,
       },
       {
@@ -89,6 +98,7 @@ function RecentMenus() {
         header: "Restaurant ID",
         size: 150,
         createAble: true,
+        enableEditing: true,
         enableColumnFilter: false,
       },
       {
@@ -108,7 +118,7 @@ function RecentMenus() {
             renderInput={(params) => (
               <TextField
                 {...params}
-                helperText={"Filter Mode: Lesss Than"}
+                helperText={"Filter Mode: less Than"}
                 sx={{ minWidth: "120px" }}
                 variant="standard"
               />
@@ -117,6 +127,7 @@ function RecentMenus() {
           />
         ),
         createAble: false,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.updated_at),
@@ -135,7 +146,7 @@ function RecentMenus() {
             renderInput={(params) => (
               <TextField
                 {...params}
-                helperText={"Filter Mode: Lesss Than"}
+                helperText={"Filter Mode: less Than"}
                 sx={{ minWidth: "120px" }}
                 variant="standard"
               />
@@ -144,6 +155,7 @@ function RecentMenus() {
           />
         ),
         createAble: false,
+        enableEditing: false,
       },
     ],
     []
@@ -166,14 +178,16 @@ function RecentMenus() {
           })}
         >
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-          <Box>
-            <Button
-              variant="contained"
-              onClick={() => setCreateModalOpen(true)}
-            >
-              Add New
-            </Button>
-          </Box>
+          {user.role !== "restaurant" && (
+            <Box>
+              <Button
+                variant="contained"
+                onClick={() => setCreateModalOpen(true)}
+              >
+                Add New
+              </Button>
+            </Box>
+          )}
         </Toolbar>
       )}
       <MaterialReactTable
@@ -207,9 +221,14 @@ function RecentMenus() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="View Details">
+            <Tooltip arrow placement="left" title="Edit Details">
               <span>
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={(e) => {
+                    setCurrentRow(row.original);
+                    setEditModalOpen(true);
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
               </span>
@@ -228,12 +247,25 @@ function RecentMenus() {
         }}
         tableInstanceRef={tableInstanceRef}
       />
-      <AddNewMenusModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
+
+      {createModalOpen && (
+        <AddNewMenusModal
+          columns={columns}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditMenusModal
+          columns={columns}
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+          row={currentRow}
+        />
+      )}
     </Card>
   );
 }

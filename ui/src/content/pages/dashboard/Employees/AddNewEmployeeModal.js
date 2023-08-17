@@ -15,7 +15,7 @@ import { LoadingButton } from "@mui/lab";
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewEmployeeModal = ({ open, columns, onClose, onSubmit }) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
@@ -31,7 +31,7 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
     e.preventDefault();
     try {
       setSpinner(true);
-      const data = await apiPost(`/admin/meals/create`, values);
+      const data = await apiPost(`/admin/employees/create`, values);
 
       if (data.success) {
         onSubmit(values);
@@ -40,6 +40,7 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
         Swal.fire({
           icon: "success",
           title: "Successfully created",
+          text: `Password is ${data.password}`,
         });
       } else {
         Swal.fire({
@@ -59,9 +60,10 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
       setSpinner(false);
     }
   };
+
   return (
     <Dialog open={open}>
-      <DialogTitle>Add New Meals</DialogTitle>
+      <DialogTitle>Add New Employee</DialogTitle>
       <DialogContent sx={{ paddingTop: "6px!important" }}>
         <Box
           component="form"
@@ -118,4 +120,4 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
   );
 };
 
-export default AddNewMealsModal;
+export default AddNewEmployeeModal;

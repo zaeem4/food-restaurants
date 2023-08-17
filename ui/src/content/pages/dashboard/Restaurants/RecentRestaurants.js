@@ -7,7 +7,8 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import MaterialReactTable from "material-react-table";
 
-import AddNewRestaurantsModal from "./AddNewRestaurantsModal.js";
+import AddNewRestaurantModal from "./AddNewRestaurantModal.js";
+import EditRestaurantModal from "./EditRestaurantModal.js";
 
 import { apiGet } from "src/utils/axios";
 
@@ -19,6 +20,8 @@ function RecentRestaurants() {
   const [isError, setIsError] = useState(false);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [currentRow, setCurrentRow] = useState({});
 
   const fetchRestaurants = async () => {
     try {
@@ -40,7 +43,9 @@ function RecentRestaurants() {
     }
   };
 
-  const handleCreateNewRow = (values) => {};
+  const handleCreateNewRow = (values) => {
+    fetchRestaurants();
+  };
 
   useEffect(() => {
     fetchRestaurants();
@@ -57,42 +62,49 @@ function RecentRestaurants() {
         header: "Name",
         size: 150,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "address",
         header: "Address",
         size: 150,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "phone",
         header: "Phone Number",
         size: 200,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "owner",
         header: "Owner",
         size: 150,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "city",
         header: "City",
         size: 150,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "tax_number",
         header: "Tax Number",
         size: 150,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "email",
         header: "Email",
         size: 150,
         createAble: true,
+        enableEditing: true,
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -101,6 +113,7 @@ function RecentRestaurants() {
         header: "Created On",
         size: 150,
         createAble: false,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.updated_at),
@@ -109,6 +122,7 @@ function RecentRestaurants() {
         header: "Updated On",
         size: 150,
         createAble: false,
+        enableEditing: false,
       },
     ],
     []
@@ -172,9 +186,14 @@ function RecentRestaurants() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="View Details">
+            <Tooltip arrow placement="left" title="Edit Details">
               <span>
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={(e) => {
+                    setCurrentRow(row.original);
+                    setEditModalOpen(true);
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
               </span>
@@ -192,12 +211,25 @@ function RecentRestaurants() {
           showAlertBanner: isError,
         }}
       />
-      <AddNewRestaurantsModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
+
+      {createModalOpen && (
+        <AddNewRestaurantModal
+          columns={columns}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditRestaurantModal
+          columns={columns}
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+          row={currentRow}
+        />
+      )}
     </Card>
   );
 }

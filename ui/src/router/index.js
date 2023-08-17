@@ -41,6 +41,9 @@ const Companies = Loader(
 );
 const Menus = Loader(lazy(() => import("src/content/pages/dashboard/Menus")));
 const Orders = Loader(lazy(() => import("src/content/pages/dashboard/Orders")));
+const Employees = Loader(
+  lazy(() => import("src/content/pages/dashboard/Employees"))
+);
 // Components
 
 // Status
@@ -246,6 +249,23 @@ const getRoute = () => {
               path: "lists",
               element: user.permissions?.orders ? (
                 <Orders />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "employees",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.employees ? (
+                <Employees />
               ) : (
                 <Navigate to="status/403" />
               ),

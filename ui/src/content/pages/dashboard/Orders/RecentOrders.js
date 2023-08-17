@@ -21,6 +21,7 @@ import MaterialReactTable from "material-react-table";
 import { apiGet } from "src/utils/axios";
 
 import AddNewOrderModal from "./AddNewOrderModal.js";
+import EditOrderModal from "./EditOrderModal.js";
 
 function RecentOrders() {
   const user = useSelector((state) => state.user.value);
@@ -32,6 +33,8 @@ function RecentOrders() {
   const [isError, setIsError] = useState(false);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [currentRow, setCurrentRow] = useState({});
 
   const fetchOrders = async () => {
     try {
@@ -81,6 +84,7 @@ function RecentOrders() {
               header: "Name",
               size: 150,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -88,6 +92,7 @@ function RecentOrders() {
               header: "Status",
               size: 150,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
               Cell: ({ cell, row }) => (
                 <Typography
@@ -109,6 +114,7 @@ function RecentOrders() {
               header: "Menu ID",
               size: 50,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -116,6 +122,7 @@ function RecentOrders() {
               header: "Company ID",
               size: 50,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -123,6 +130,7 @@ function RecentOrders() {
               header: "Restaurant ID",
               size: 50,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -130,6 +138,7 @@ function RecentOrders() {
               header: "Ingredients",
               size: 150,
               createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
 
@@ -150,7 +159,7 @@ function RecentOrders() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      helperText={"Filter Mode: Lesss Than"}
+                      helperText={"Filter Mode: less Than"}
                       sx={{ minWidth: "120px" }}
                       variant="standard"
                     />
@@ -159,6 +168,7 @@ function RecentOrders() {
                 />
               ),
               createAble: false,
+              enableEditing: false,
             },
             {
               accessorFn: (row) => new Date(row.updated_at),
@@ -177,7 +187,7 @@ function RecentOrders() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      helperText={"Filter Mode: Lesss Than"}
+                      helperText={"Filter Mode: less Than"}
                       sx={{ minWidth: "120px" }}
                       variant="standard"
                     />
@@ -186,6 +196,7 @@ function RecentOrders() {
                 />
               ),
               createAble: false,
+              enableEditing: false,
             },
           ]
         : [
@@ -194,6 +205,7 @@ function RecentOrders() {
               header: "Status",
               size: 150,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
               Cell: ({ cell, row }) => (
                 <Typography
@@ -210,6 +222,7 @@ function RecentOrders() {
               header: "Menu ID",
               size: 50,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -217,6 +230,7 @@ function RecentOrders() {
               header: "Company ID",
               size: 50,
               createAble: true,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -236,7 +250,7 @@ function RecentOrders() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      helperText={"Filter Mode: Lesss Than"}
+                      helperText={"Filter Mode: less Than"}
                       sx={{ minWidth: "120px" }}
                       variant="standard"
                     />
@@ -245,6 +259,7 @@ function RecentOrders() {
                 />
               ),
               createAble: false,
+              enableEditing: false,
             },
             {
               accessorFn: (row) => new Date(row.updated_at),
@@ -263,7 +278,7 @@ function RecentOrders() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      helperText={"Filter Mode: Lesss Than"}
+                      helperText={"Filter Mode: less Than"}
                       sx={{ minWidth: "120px" }}
                       variant="standard"
                     />
@@ -272,6 +287,7 @@ function RecentOrders() {
                 />
               ),
               createAble: false,
+              enableEditing: false,
             },
           ],
     []
@@ -338,9 +354,14 @@ function RecentOrders() {
         renderRowActions={({ row }) =>
           user.role !== "rider" && (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip arrow placement="left" title="View Details">
+              <Tooltip arrow placement="left" title="Edit Details">
                 <span>
-                  <IconButton onClick={() => {}}>
+                  <IconButton
+                    onClick={(e) => {
+                      setCurrentRow(row.original);
+                      setEditModalOpen(true);
+                    }}
+                  >
                     <EditIcon />
                   </IconButton>
                 </span>
@@ -358,14 +379,26 @@ function RecentOrders() {
           isLoading,
           showAlertBanner: isError,
         }}
-        tableInstanceRef={tableInstanceRef}
       />
-      <AddNewOrderModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
+
+      {createModalOpen && (
+        <AddNewOrderModal
+          columns={columns}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditOrderModal
+          columns={columns}
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+          row={currentRow}
+        />
+      )}
     </Card>
   );
 }

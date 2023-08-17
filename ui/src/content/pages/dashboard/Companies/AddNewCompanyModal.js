@@ -21,7 +21,7 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        acc[column.accessorKey] = null;
+        acc[column.accessorKey] = " ";
       }
       return acc;
     }, {})

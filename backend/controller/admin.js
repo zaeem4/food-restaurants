@@ -63,6 +63,7 @@ const getTotalCounts = async (req, res) => {
       SELECT
         (SELECT COUNT(*) FROM restaurants) AS restaurant_count,
         (SELECT COUNT(*) FROM companies) AS company_count,
+        (SELECT COUNT(*) FROM employees) AS employee_count,
         (SELECT MAX(created_at) FROM restaurants) AS last_restaurant_created,
         (SELECT MAX(created_at) FROM companies) AS last_company_created;
     `;

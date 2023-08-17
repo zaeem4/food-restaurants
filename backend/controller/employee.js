@@ -4,27 +4,27 @@ const Logger = require("../utils/logger");
 
 const get = async (req, res) => {
   try {
-    const query = "SELECT * FROM invoices ";
+    const query = `SELECT * FROM employees;`;
     const result = await Pool.query(query);
     if (result.rows) {
-      return res.json({ success: true, invoices: result.rows });
+      return res.json({ success: true, employees: result.rows });
     }
+
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
-    console.log(`400 invoice(get) | ${error}`);
+    console.log(`400 employee(get) | ${error}`);
     return res.json({ success: false, error: error });
   }
 };
-
 const create = async (req, res) => {
   try {
-    const { name, file_location = null, restaurant_id } = req.body;
+    const { name, company_id } = req.body;
     const query = `
-        INSERT INTO invoices (name, file_location, restaurant_id)
-        VALUES ($1, $2, $3)
+        INSERT INTO employees (name, company_id)
+        VALUES ($1, $2)
         RETURNING id;
     `;
-    const values = [name, file_location, restaurant_id];
+    const values = [name, company_id];
     const result = await Pool.query(query, values);
 
     if (result.rows.length > 0) {
@@ -32,7 +32,7 @@ const create = async (req, res) => {
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
-    console.log(`400 invoice(create) | ${error}`);
+    console.log(`400 employee(create) | ${error}`);
     return res.json({ success: false, error: error });
   }
 };

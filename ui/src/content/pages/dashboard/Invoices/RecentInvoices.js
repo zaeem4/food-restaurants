@@ -12,10 +12,11 @@ import {
   TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
 import { apiGet } from "src/utils/axios";
 
-// import AddNewInvoiceModal from "./AddNewInvoiceModal.js";
+import PdfInvoice from "./PdfInvoice";
 
 function RecentInvoices() {
   const columns = useMemo(
@@ -49,7 +50,7 @@ function RecentInvoices() {
             renderInput={(params) => (
               <TextField
                 {...params}
-                helperText={"Filter Mode: Lesss Than"}
+                helperText={"Filter Mode: less Than"}
                 sx={{ minWidth: "120px" }}
                 variant="standard"
               />
@@ -75,7 +76,7 @@ function RecentInvoices() {
             renderInput={(params) => (
               <TextField
                 {...params}
-                helperText={"Filter Mode: Lesss Than"}
+                helperText={"Filter Mode: less Than"}
                 sx={{ minWidth: "120px" }}
                 variant="standard"
               />
@@ -91,6 +92,8 @@ function RecentInvoices() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+
+  const [invoiceData, setInvoiceData] = useState(null);
 
   const fetchInvoices = async () => {
     try {
@@ -111,6 +114,10 @@ function RecentInvoices() {
       setIsLoading(false);
     }
   };
+  const handleGeneratePdf = (row) => {
+    debugger;
+    setInvoiceData(row.original);
+  };
 
   useEffect(() => {
     fetchInvoices();
@@ -121,58 +128,72 @@ function RecentInvoices() {
   }, []);
 
   return (
-    <Card>
-      <MaterialReactTable
-        columns={columns}
-        data={data}
-        enableColumnFilters
-        enableFullScreenToggle={false}
-        enableDensityToggle={false}
-        enableStickyHeader
-        enableStickyFooter
-        enableRowActions
-        positionToolbarAlertBanner="bottom"
-        // positionActionsColumn={"last"}
-        initialState={{
-          showGlobalFilter: true,
-          showColumnFilters: true,
-        }}
-        muiToolbarAlertBannerProps={
-          isError
-            ? {
-                color: "error",
-                children: "Error loading data",
-              }
-            : undefined
-        }
-        displayColumnDefOptions={{
-          "mrt-row-actions": {
-            header: "Action",
-          },
-        }}
-        renderRowActions={({ row }) => (
-          <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="View Details">
-              <span>
-                <IconButton onClick={() => {}}>
-                  <EditIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </Box>
-        )}
-        positionGlobalFilter="left"
-        muiSearchTextFieldProps={{
-          placeholder: `Search`,
-          sx: { minWidth: "350%" },
-          variant: "outlined",
-        }}
-        state={{
-          isLoading,
-          showAlertBanner: isError,
-        }}
-      />
-    </Card>
+    <>
+      <Card>
+        <MaterialReactTable
+          columns={columns}
+          data={data}
+          enableColumnFilters
+          enableFullScreenToggle={false}
+          enableDensityToggle={false}
+          enableStickyHeader
+          enableStickyFooter
+          enableRowActions
+          positionToolbarAlertBanner="bottom"
+          // positionActionsColumn={"last"}
+          initialState={{
+            showGlobalFilter: true,
+            showColumnFilters: true,
+          }}
+          muiToolbarAlertBannerProps={
+            isError
+              ? {
+                  color: "error",
+                  children: "Error loading data",
+                }
+              : undefined
+          }
+          displayColumnDefOptions={{
+            "mrt-row-actions": {
+              header: "Action",
+            },
+          }}
+          renderRowActions={({ row }) => (
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              <Tooltip arrow placement="left" title="Edit Details">
+                <span>
+                  <IconButton onClick={() => {}}>
+                    <EditIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip arrow placement="left" title="Generate PDF">
+                <span>
+                  <IconButton
+                    onClick={() => {
+                      handleGeneratePdf(row);
+                    }}
+                  >
+                    <PictureAsPdfIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+          )}
+          positionGlobalFilter="left"
+          muiSearchTextFieldProps={{
+            placeholder: `Search`,
+            sx: { minWidth: "350%" },
+            variant: "outlined",
+          }}
+          state={{
+            isLoading,
+            showAlertBanner: isError,
+          }}
+        />
+      </Card>
+      <Card>{invoiceData && <PdfInvoice invoiceData={invoiceData} />}</Card>
+    </>
   );
 }
 

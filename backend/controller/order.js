@@ -74,26 +74,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
   }
 };
 
-const getInvoices = async (req, res) => {
-  try {
-    const query = `
-        SELECT * FROM invoices;
-    `;
-
-    const result = await Pool.query(query);
-    if (result.rows) {
-      return res.json({ success: true, invoices: result.rows });
-    }
-    return res.json({ success: false, error: "error in db" });
-  } catch (error) {
-    console.error("Error getting invoices:", error);
-    console.log(`400 || order(getInvoices).js | ${error}`);
-    return res.json({ success: false, error: error });
-  }
-};
-
 module.exports = {
   create,
-  getInvoices,
   getOrdersWithMenusAndIngredients,
 };

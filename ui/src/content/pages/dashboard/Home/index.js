@@ -27,6 +27,7 @@ function Home() {
           ...data,
           totalRestaurant: response.totalCount.restaurant_count,
           totalCompanies: response.totalCount.company_count,
+          totalEmployees: response.totalCount.employee_count,
           lastRestaurantCreated: new Date(
             response.totalCount.last_restaurant_created
           ).toLocaleString(),

@@ -12,26 +12,14 @@ import {
 import { NavLink as RouterLink } from "react-router-dom";
 import { SidebarContext } from "src/contexts/SidebarContext";
 
-// import TableChartTwoToneIcon from "@mui/icons-material/TableChartTwoTone";
-import AssessmentIcon from "@mui/icons-material/Assessment";
-// import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
-// import BrightnessLowTwoToneIcon from '@mui/icons-material/BrightnessLowTwoTone';
-// import MmsTwoToneIcon from '@mui/icons-material/MmsTwoTone';
-// import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
-// import BallotTwoToneIcon from '@mui/icons-material/BallotTwoTone';
-// import BeachAccessTwoToneIcon from '@mui/icons-material/BeachAccessTwoTone';
-// import EmojiEventsTwoToneIcon from '@mui/icons-material/EmojiEventsTwoTone';
-// import FilterVintageTwoToneIcon from '@mui/icons-material/FilterVintageTwoTone';
-// import HowToVoteTwoToneIcon from '@mui/icons-material/HowToVoteTwoTone';
-// import LocalPharmacyTwoToneIcon from '@mui/icons-material/LocalPharmacyTwoTone';
-// import RedeemTwoToneIcon from '@mui/icons-material/RedeemTwoTone';
-// import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
-// import TrafficTwoToneIcon from '@mui/icons-material/TrafficTwoTone';
-// import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
-// import ChromeReaderModeTwoToneIcon from '@mui/icons-material/ChromeReaderModeTwoTone';
-// import WorkspacePremiumTwoToneIcon from '@mui/icons-material/WorkspacePremiumTwoTone';
-// import CameraFrontTwoToneIcon from '@mui/icons-material/CameraFrontTwoTone';
-// import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTone';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import BusinessIcon from '@mui/icons-material/Business';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import PeopleIcon from '@mui/icons-material/People';
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -186,7 +174,7 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/home"
-          startIcon={<AssessmentIcon />}
+          startIcon={<DashboardIcon />}
         >
           Dashbaord
         </Button>
@@ -199,7 +187,7 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/restaurants"
-          startIcon={<AssessmentIcon />}
+          startIcon={<RestaurantIcon />}
         >
           Restaurants
         </Button>
@@ -212,7 +200,7 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/meals-and-ingredients"
-          startIcon={<AssessmentIcon />}
+          startIcon={<RestaurantMenuIcon />}
         >
           Meals & Ingredients
         </Button>
@@ -225,7 +213,7 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/invoices"
-          startIcon={<AssessmentIcon />}
+          startIcon={<ReceiptIcon />}
         >
           Invoices
         </Button>
@@ -238,7 +226,7 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/companies"
-          startIcon={<AssessmentIcon />}
+          startIcon={<BusinessIcon />}
         >
           Companies
         </Button>
@@ -251,7 +239,7 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/menus"
-          startIcon={<AssessmentIcon />}
+          startIcon={<MenuBookIcon />}
         >
           Menus
         </Button>
@@ -264,13 +252,25 @@ function SidebarMenu({ user }) {
           component={RouterLink}
           onClick={closeSidebar}
           to="/dashboard/orders"
-          startIcon={<AssessmentIcon />}
+          startIcon={<InventoryIcon />}
         >
           Orders
         </Button>
       </ListItem>
     ),
-    employees: false,
+    employees: (
+      <ListItem component="div" key="employees">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/employees"
+          startIcon={<PeopleIcon />}
+        >
+          Employees
+        </Button>
+      </ListItem>
+    ),
     reports: false,
   };
 

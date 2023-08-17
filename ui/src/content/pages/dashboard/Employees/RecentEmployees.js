@@ -6,11 +6,11 @@ import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
 
-import AddNewCompanyModal from "./AddNewCompanyModal.js";
+import AddNewCompanyModal from "./AddNewEmployeeModal.js";
 
 import { apiGet } from "src/utils/axios";
 
-function RecentCompanies() {
+function RecentEmployees() {
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
@@ -21,13 +21,13 @@ function RecentCompanies() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState({});
 
-  const fetchCompanies = async () => {
+  const fetchEmployees = async () => {
     try {
       setIsLoading(true);
 
-      const response = await apiGet("/admin/companies");
+      const response = await apiGet("/admin/employees");
       if (response.success) {
-        setData(response.companies);
+        setData(response.employees);
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -42,11 +42,11 @@ function RecentCompanies() {
   };
 
   const handleCreateNewRow = (values) => {
-    fetchCompanies();
+    fetchEmployees();
   };
 
   useEffect(() => {
-    fetchCompanies();
+    fetchEmployees();
 
     return () => {
       setData([]);
@@ -56,50 +56,14 @@ function RecentCompanies() {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "user_name",
+        accessorKey: "name",
         header: "Name",
         size: 150,
         createAble: true,enableEditing: true,
       },
       {
-        accessorKey: "address",
-        header: "Address",
-        size: 150,
-        createAble: true,enableEditing: true,
-      },
-      {
-        accessorKey: "phone",
-        header: "Phone Number",
-        size: 200,
-        createAble: true,enableEditing: true,
-      },
-      {
-        accessorKey: "owner",
-        header: "Owner",
-        size: 150,
-        createAble: true,enableEditing: true,
-      },
-      {
-        accessorKey: "city",
-        header: "City",
-        size: 150,
-        createAble: true,enableEditing: true,
-      },
-      {
-        accessorKey: "tax_number",
-        header: "Tax Number",
-        size: 150,
-        createAble: true,enableEditing: true,
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        size: 150,
-        createAble: true,enableEditing: true,
-      },
-      {
-        accessorKey: "shifts",
-        header: "Shifts",
+        accessorKey: "company_id",
+        header: "Company ID",
         size: 150,
         createAble: true,enableEditing: true,
       },
@@ -211,4 +175,4 @@ function RecentCompanies() {
   );
 }
 
-export default RecentCompanies;
+export default RecentEmployees;

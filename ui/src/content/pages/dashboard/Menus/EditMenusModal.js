@@ -13,15 +13,15 @@ import {
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
-import { apiPost } from "src/utils/axios";
+import { apiPut } from "src/utils/axios";
 
-const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
+const EditMenusModal = ({ open, columns, onClose, onSubmit, row }) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
-      if (column.accessorKey && column.createAble) {
-        acc[column.accessorKey] = " ";
+      if (column.accessorKey && row[column.accessorKey]) {
+        acc[column.accessorKey] = row[column.accessorKey];
       }
       return acc;
     }, {})
@@ -31,7 +31,7 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
     e.preventDefault();
     try {
       setSpinner(true);
-      const data = await apiPost(`/admin/meals/create`, values);
+      const data = await apiPut(`/admin/menu/${row.id}`, values);
 
       if (data.success) {
         onSubmit(values);
@@ -59,9 +59,10 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
       setSpinner(false);
     }
   };
+
   return (
     <Dialog open={open}>
-      <DialogTitle>Add New Meals</DialogTitle>
+      <DialogTitle>Edit Menu</DialogTitle>
       <DialogContent sx={{ paddingTop: "6px!important" }}>
         <Box
           component="form"
@@ -81,21 +82,39 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
               gap: "1.5rem",
             }}
           >
-            {columns.map(
-              (column) =>
-                column.createAble && (
-                  <TextField
-                    required
-                    error={!values[column.accessorKey]}
-                    variant="standard"
-                    key={column.accessorKey}
-                    label={column.header}
-                    name={column.accessorKey}
-                    onChange={(e) =>
-                      setValues({ ...values, [e.target.name]: e.target.value })
-                    }
-                  />
-                )
+            {columns.map((column) =>
+              column.enableEditing ? (
+                <TextField
+                  required
+                  error={!row[column.accessorKey]}
+                  variant="standard"
+                  label={column.header}
+                  key={column.accessorKey}
+                  name={column.accessorKey}
+                  value={row[column.accessorKey]}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                />
+              ) : ["created_at", "updated_at"].includes(column.accessorKey) ? (
+                <TextField
+                  variant="standard"
+                  label={column.header}
+                  key={column.accessorKey}
+                  name={column.accessorKey}
+                  value={new Date(row[column.accessorKey]).toLocaleDateString()}
+                  inputProps={{ readOnly: true }}
+                />
+              ) : (
+                <TextField
+                  variant="standard"
+                  label={column.header}
+                  key={column.accessorKey}
+                  name={column.accessorKey}
+                  value={row[column.accessorKey]}
+                  inputProps={{ readOnly: true }}
+                />
+              )
             )}
           </Stack>
           <br />
@@ -109,7 +128,7 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
               variant="contained"
               loading={spinner}
             >
-              Add
+              Edit
             </LoadingButton>
           </DialogActions>
         </Box>
@@ -118,4 +137,4 @@ const AddNewMealsModal = ({ open, columns, onClose, onSubmit }) => {
   );
 };
 
-export default AddNewMealsModal;
+export default EditMenusModal;

@@ -18,6 +18,8 @@ function RecentIngredients() {
   const [isError, setIsError] = useState(false);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [currentRow, setCurrentRow] = useState({});
 
   const fetchIngredients = async () => {
     try {
@@ -57,19 +59,19 @@ function RecentIngredients() {
         accessorKey: "name",
         header: "name",
         size: 150,
-        createAble: true,
+        createAble: true,enableEditing: true,
       },
       {
         accessorKey: "description",
         header: "Description",
         size: 150,
-        createAble: true,
+        createAble: true,enableEditing: true,
       },
       {
         accessorKey: "meals",
         header: "Meals ID",
         size: 150,
-        createAble: true,
+        createAble: true,enableEditing: true,
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -77,7 +79,7 @@ function RecentIngredients() {
         accessorKey: "created_at",
         header: "Created On",
         size: 150,
-        createAble: false,
+        createAble: false,enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.updated_at),
@@ -85,7 +87,7 @@ function RecentIngredients() {
         accessorKey: "updated_at",
         header: "Updated On",
         size: 150,
-        createAble: false,
+        createAble: false,enableEditing: false,
       },
     ],
     []
@@ -149,7 +151,7 @@ function RecentIngredients() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="View Details">
+            <Tooltip arrow placement="left" title="Edit Details">
               <span>
                 <IconButton onClick={() => {}}>
                   <EditIcon />

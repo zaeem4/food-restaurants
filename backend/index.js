@@ -14,6 +14,7 @@ const invoiceController = require("./controller/invoice");
 const companyController = require("./controller/company");
 const menuController = require("./controller/menu");
 const orderController = require("./controller/order");
+const employeeController = require("./controller/employee");
 
 const { AuthMiddleware } = require("./niddleware/verify-token");
 
@@ -57,9 +58,12 @@ app.group("/api/admin", (router) => {
   router.get("/orders", orderController.getOrdersWithMenusAndIngredients);
   router.post("/orders/create", orderController.create);
 
-  router.get("/invoices", orderController.getInvoices);
+  router.get("/invoices", invoiceController.get);
 
   router.get("/total-counts", adminController.getTotalCounts);
+
+  router.get("/employees", employeeController.get);
+  router.post("/employees/create", employeeController.create);
 });
 
 app.listen(process.env.SERVER_PORT, () => {
