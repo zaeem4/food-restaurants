@@ -323,6 +323,7 @@ function RecentOrders() {
         </Toolbar>
       )}
       <MaterialReactTable
+        tableInstanceRef={tableInstanceRef}
         columns={columns}
         data={data}
         enableColumnFilters
@@ -352,7 +353,7 @@ function RecentOrders() {
           },
         }}
         renderRowActions={({ row }) =>
-          user.role !== "rider" && (
+          !["rider", "restaurant", "company"].includes(user.role) && (
             <Box sx={{ display: "flex", gap: "1rem" }}>
               <Tooltip arrow placement="left" title="Edit Details">
                 <span>

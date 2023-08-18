@@ -219,22 +219,24 @@ function RecentMenus() {
             header: "Action",
           },
         }}
-        renderRowActions={({ row }) => (
-          <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="Edit Details">
-              <span>
-                <IconButton
-                  onClick={(e) => {
-                    setCurrentRow(row.original);
-                    setEditModalOpen(true);
-                  }}
-                >
-                  <EditIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </Box>
-        )}
+        renderRowActions={({ row }) =>
+          user.role !== "restaurant" && (
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              <Tooltip arrow placement="left" title="Edit Details">
+                <span>
+                  <IconButton
+                    onClick={(e) => {
+                      setCurrentRow(row.original);
+                      setEditModalOpen(true);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+          )
+        }
         globalFilterModeOptions={["fuzzy", "startsWith"]}
         muiSearchTextFieldProps={{
           placeholder: `Search`,

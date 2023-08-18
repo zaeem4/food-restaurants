@@ -6,7 +6,8 @@ import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
 
-import AddNewCompanyModal from "./AddNewEmployeeModal.js";
+import AddNewEmployeeModal from "./AddNewEmployeeModal.js";
+import EditEmployeeModal from "./EditEmployeeModal.js";
 
 import { apiGet } from "src/utils/axios";
 
@@ -59,13 +60,15 @@ function RecentEmployees() {
         accessorKey: "name",
         header: "Name",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "company_id",
         header: "Company ID",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -73,7 +76,8 @@ function RecentEmployees() {
         accessorKey: "created_at",
         header: "Created On",
         size: 150,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.updated_at),
@@ -81,7 +85,8 @@ function RecentEmployees() {
         accessorKey: "updated_at",
         header: "Updated On",
         size: 150,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
       },
     ],
     []
@@ -147,7 +152,12 @@ function RecentEmployees() {
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Tooltip arrow placement="left" title="Edit Details">
               <span>
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={(e) => {
+                    setCurrentRow(row.original);
+                    setEditModalOpen(true);
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
               </span>
@@ -165,12 +175,25 @@ function RecentEmployees() {
           showAlertBanner: isError,
         }}
       />
-      <AddNewCompanyModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
+
+      {createModalOpen && (
+        <AddNewEmployeeModal
+          columns={columns}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditEmployeeModal
+          columns={columns}
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+          row={currentRow}
+        />
+      )}
     </Card>
   );
 }

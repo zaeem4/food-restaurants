@@ -59,31 +59,43 @@ function RecentMeals() {
         accessorKey: "name",
         header: "name",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "description",
         header: "Description",
         size: 250,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "price",
         header: "Price",
         size: 200,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
-        accessorKey: "ingredient_names",
+        accessorKey: "ingredients_name",
         header: "Ingredients",
         size: 200,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
+      },
+      {
+        accessorKey: "ingredients",
+        header: "Ingredients",
+        size: 200,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "restaurant_id",
         header: "Restaurant ID",
         size: 50,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -91,7 +103,8 @@ function RecentMeals() {
         accessorKey: "created_at",
         header: "Created On",
         size: 150,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.updated_at),
@@ -99,7 +112,8 @@ function RecentMeals() {
         accessorKey: "updated_at",
         header: "Updated On",
         size: 150,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
       },
     ],
     []
@@ -147,6 +161,7 @@ function RecentMeals() {
         // positionActionsColumn={"last"}
         initialState={{
           showGlobalFilter: true,
+          columnVisibility: { ingredients: false },
         }}
         muiToolbarAlertBannerProps={
           isError

@@ -153,20 +153,20 @@ function RecentInvoices() {
                 }
               : undefined
           }
-          displayColumnDefOptions={{
-            "mrt-row-actions": {
-              header: "Action",
-            },
-          }}
+          // displayColumnDefOptions={{
+          //   "mrt-row-actions": {
+          //     header: "Action",
+          //   },
+          // }}
           renderRowActions={({ row }) => (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip arrow placement="left" title="Edit Details">
+              {/* <Tooltip arrow placement="left" title="Edit Details">
                 <span>
                   <IconButton onClick={() => {}}>
                     <EditIcon />
                   </IconButton>
                 </span>
-              </Tooltip>
+              </Tooltip> */}
               <Tooltip arrow placement="left" title="Generate PDF">
                 <span>
                   <IconButton

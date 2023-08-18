@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
 
 import AddNewCompanyModal from "./AddNewCompanyModal.js";
+import EditCompanyModal from "./EditCompanyModal.js";
 
 import { apiGet } from "src/utils/axios";
 
@@ -59,49 +60,57 @@ function RecentCompanies() {
         accessorKey: "user_name",
         header: "Name",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "address",
         header: "Address",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "phone",
         header: "Phone Number",
         size: 200,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "owner",
         header: "Owner",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "city",
         header: "City",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "tax_number",
         header: "Tax Number",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "email",
         header: "Email",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorKey: "shifts",
         header: "Shifts",
         size: 150,
-        createAble: true,enableEditing: true,
+        createAble: true,
+        enableEditing: true,
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -109,7 +118,8 @@ function RecentCompanies() {
         accessorKey: "created_at",
         header: "Created On",
         size: 150,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.updated_at),
@@ -117,7 +127,8 @@ function RecentCompanies() {
         accessorKey: "updated_at",
         header: "Updated On",
         size: 150,
-        createAble: false,enableEditing: false,
+        createAble: false,
+        enableEditing: false,
       },
     ],
     []
@@ -183,7 +194,12 @@ function RecentCompanies() {
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Tooltip arrow placement="left" title="Edit Details">
               <span>
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={(e) => {
+                    setCurrentRow(row.original);
+                    setEditModalOpen(true);
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
               </span>
@@ -201,12 +217,25 @@ function RecentCompanies() {
           showAlertBanner: isError,
         }}
       />
-      <AddNewCompanyModal
-        columns={columns}
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateNewRow}
-      />
+
+      {createModalOpen && (
+        <AddNewCompanyModal
+          columns={columns}
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+        />
+      )}
+
+      {editModalOpen && (
+        <EditCompanyModal
+          columns={columns}
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+          row={currentRow}
+        />
+      )}
     </Card>
   );
 }

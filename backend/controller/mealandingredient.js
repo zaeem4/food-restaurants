@@ -10,6 +10,7 @@ const insertMeal = async (req, res) => {
       price,
       photo_location = null,
       restaurant_id,
+      ingredients,
     } = req.body;
 
     const query = `
@@ -18,9 +19,23 @@ const insertMeal = async (req, res) => {
         RETURNING id;
         `;
     const values = [name, description, price, photo_location, restaurant_id];
-    const result = await Pool.query(query, values);
+    const mealsResult = await Pool.query(query, values);
 
-    if (result.rows.length > 0) {
+    if (mealsResult.rows.length > 0) {
+      const mealId = mealsResult.rows[0].id;
+
+      const ingredientIdArray = ingredients
+        .split(",")
+        .map((ingredientId) => parseInt(ingredientId));
+
+      for (const ingredientId of ingredientIdArray) {
+        const mealIngredientQuery = `
+          INSERT INTO mealsingredients (meal_id, ingredient_id)
+          VALUES ($1, $2);
+      `;
+        const mealIngredientValues = [mealId, ingredientId];
+        await Pool.query(mealIngredientQuery, mealIngredientValues);
+      }
       return res.json({ success: true });
     }
     return res.json({ success: false, error: "error in db" });
@@ -32,7 +47,7 @@ const insertMeal = async (req, res) => {
 
 async function insertIngredient(req, res) {
   try {
-    const { name, description, meals } = req.body;
+    const { name, description } = req.body;
 
     const ingredientQuery = `
       INSERT INTO ingredients (name, description)
@@ -41,24 +56,9 @@ async function insertIngredient(req, res) {
     `;
 
     // Insert ingredient into ingredients table and get the ingredient ID
-    const ingredientResult = await Pool.query(ingredientQuery, [
-      name,
-      description,
-    ]);
+    const result = await Pool.query(ingredientQuery, [name, description]);
 
-    if (ingredientResult.rows.length > 0) {
-      const ingredientId = ingredientResult.rows[0].id;
-
-      const mealsArray = meals.split(",").map(mealId => parseInt(mealId));
-
-      for (const mealId of mealsArray) {
-        const mealIngredientQuery = `
-          INSERT INTO mealsingredients (meal_id, ingredient_id)
-          VALUES ($1, $2);
-      `;
-        const mealIngredientValues = [mealId, ingredientId];
-        await Pool.query(mealIngredientQuery, mealIngredientValues);
-      }
+    if (result.rows.length > 0) {
       return res.json({ success: true });
     }
     return res.json({ success: false, error: "error in db" });
@@ -71,7 +71,7 @@ async function insertIngredient(req, res) {
 const getMealsWithIngredients = async (req, res) => {
   try {
     const query = `
-      SELECT m.*, ARRAY_AGG(i.id) AS ingredient_ids, ARRAY_AGG(i.name) AS ingredient_names
+      SELECT m.*, ARRAY_AGG(i.id) AS ingredients, ARRAY_AGG(i.name) AS ingredients_name
       FROM meals m
       LEFT JOIN mealsingredients mi ON m.id = mi.meal_id
       LEFT JOIN ingredients i ON mi.ingredient_id = i.id
@@ -94,9 +94,10 @@ const getMealsWithIngredients = async (req, res) => {
 const getIngredientsWithMeals = async (req, res) => {
   try {
     const query = `
-      SELECT i.*, ARRAY_AGG(mi.meal_id) AS meals
+      SELECT i.*, ARRAY_AGG(mi.meal_id) AS meals, ARRAY_AGG(m.name) AS meals_name
       FROM ingredients i
       LEFT JOIN mealsingredients mi ON i.id = mi.ingredient_id
+      LEFT JOIN meals m on mi.meal_id = m.id
       GROUP BY i.id;
     `;
     const result = await Pool.query(query);
