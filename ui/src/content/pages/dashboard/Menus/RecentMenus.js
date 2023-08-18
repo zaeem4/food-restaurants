@@ -178,7 +178,7 @@ function RecentMenus() {
           })}
         >
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-          {user.role !== "restaurant" && (
+          {!["restaurant", "company"].includes(user.role) && (
             <Box>
               <Button
                 variant="contained"
@@ -220,7 +220,7 @@ function RecentMenus() {
           },
         }}
         renderRowActions={({ row }) =>
-          user.role !== "restaurant" && (
+          !["restaurant", "company"].includes(user.role) && (
             <Box sx={{ display: "flex", gap: "1rem" }}>
               <Tooltip arrow placement="left" title="Edit Details">
                 <span>
