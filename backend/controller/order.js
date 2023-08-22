@@ -4,14 +4,28 @@ const Logger = require("../utils/logger");
 
 const create = async (req, res) => {
   try {
-    const { name, status, company_id, restaurant_id, menus } = req.body;
+    const { name, status, company_id, restaurant_id, employee_id, menus } =
+      req.body;
+
+    let employee;
+    if (!employee_id || employee_id === " ") {
+      employee = null;
+    } else {
+      employee = employee_id;
+    }
 
     const query = `
-        INSERT INTO Orders (name, status, company_id, restaurant_id)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO Orders (name, status, company_id, restaurant_id, employee_id)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id;
     `;
-    const values = [name, status.toLowerCase(), company_id, restaurant_id];
+    const values = [
+      name,
+      status.toLowerCase(),
+      company_id,
+      restaurant_id,
+      employee,
+    ];
     const orderResult = await Pool.query(query, values);
 
     if (orderResult.rows.length > 0) {
@@ -27,17 +41,17 @@ const create = async (req, res) => {
 
         await Pool.query(ordersMenusInsertQuery, ordersMenusValues);
       }
-      const insertQuery = `
-        INSERT INTO invoices (name, restaurant_id)
-        VALUES ($1, $2)
-        RETURNING id;
-        `;
+      return res.json({ success: true });
+      // const insertQuery = `
+      //   INSERT INTO invoices (name, restaurant_id)
+      //   VALUES ($1, $2)
+      //   RETURNING id;
+      //   `;
 
-      const values = [`invoice of ${restaurant_id}`, restaurant_id];
-      const invoiceResult = await Pool.query(insertQuery, values);
-      if (invoiceResult.rows.length > 0) {
-        return res.json({ success: true });
-      }
+      // const values = [`invoice of ${restaurant_id}`, restaurant_id];
+      // const invoiceResult = await Pool.query(insertQuery, values);
+      // if (invoiceResult.rows.length > 0) {
+      // }
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
@@ -50,7 +64,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
   try {
     const query = `
         SELECT
-            o.company_id, o.restaurant_id,
+            o.company_id, o.restaurant_id, o.employee_id,
             o.id AS order_id, o.created_at, o.updated_at,
             o.status, o.name,
             array_agg(DISTINCT om.menu_id) AS menus,

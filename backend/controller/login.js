@@ -32,6 +32,21 @@ const verify = async (req, res) => {
         const permissions = await Pool.query(
           `select * from permissions where role = '${userDetails.role}';`
         );
+
+        if (userDetails.role === "restaurant") {
+          let role = await Pool.query(
+            `select * from restaurants where user_id = '${userDetails.id}';`
+          );
+          role = role.rows[0];
+          userDetails["role_id"] = role.id;
+        } else if (userDetails.role === "company") {
+          let role = await Pool.query(
+            `select * from companies where user_id = '${userDetails.id}';`
+          );
+          role = role.rows[0];
+          userDetails["role_id"] = role.id;
+        }
+
         userDetails.permissions =
           permissions.rows.length > 0 ? permissions.rows[0].scope : {};
 

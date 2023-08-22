@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialStateValue = {
+  id: 0,
   userName: "",
   email: "",
   role: "",
@@ -15,6 +16,7 @@ const initialStateValue = {
     employees: false,
     reports: false,
   },
+  role_id: 0,
 };
 
 export const userSlice = createSlice({

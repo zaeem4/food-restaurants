@@ -68,6 +68,13 @@ CREATE TABLE companies (
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE employees (
+  id serial PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  company_id bigint REFERENCES companies(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE menus (
     id bigserial PRIMARY KEY,
@@ -75,6 +82,7 @@ CREATE TABLE menus (
     description TEXT NOT NULL,
     meal_id bigint NOT NULL REFERENCES meals(id),
     restaurant_id bigint NOT NULL REFERENCES restaurants(id),
+    day VARCHAR(255) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
@@ -85,6 +93,7 @@ CREATE TABLE orders (
   status VARCHAR(255) NOT NULL,
   company_id bigint REFERENCES companies(id),
   restaurant_id bigint REFERENCES restaurants(id),
+  employee_id bigint REFERENCES employees(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -103,5 +112,3 @@ CREATE TABLE invoices (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-

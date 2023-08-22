@@ -18,13 +18,13 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { name, description, meal_id, restaurant_id } = req.body;
+    const { name, description, meal_id, restaurant_id, day } = req.body;
     const query = `
-        INSERT INTO menus (name, description, meal_id, restaurant_id)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO menus (name, description, meal_id, restaurant_id, day)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id;
     `;
-    const values = [name, description, meal_id, restaurant_id];
+    const values = [name, description, meal_id, restaurant_id, day];
     const result = await Pool.query(query, values);
 
     if (result.rows.length > 0) {

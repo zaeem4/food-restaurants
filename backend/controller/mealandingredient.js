@@ -24,15 +24,15 @@ const insertMeal = async (req, res) => {
     if (mealsResult.rows.length > 0) {
       const mealId = mealsResult.rows[0].id;
 
-      const ingredientIdArray = ingredients
-        .split(",")
-        .map((ingredientId) => parseInt(ingredientId));
+      // const ingredientIdArray = ingredients
+      //   .split(",")
+      //   .map((ingredientId) => parseInt(ingredientId));
 
-      for (const ingredientId of ingredientIdArray) {
+      for (const ingredientId of ingredients) {
         const mealIngredientQuery = `
-          INSERT INTO mealsingredients (meal_id, ingredient_id)
-          VALUES ($1, $2);
-      `;
+            INSERT INTO mealsingredients (meal_id, ingredient_id)
+            VALUES ($1, $2);
+        `;
         const mealIngredientValues = [mealId, ingredientId];
         await Pool.query(mealIngredientQuery, mealIngredientValues);
       }
@@ -80,7 +80,17 @@ const getMealsWithIngredients = async (req, res) => {
     const result = await Pool.query(query);
 
     if (result.rows) {
-      return res.json({ success: true, meals: result.rows });
+      const ingredients = await Pool.query("select * from ingredients;");
+      const restaurants = await Pool.query(
+        "select r.*, u.user_name from restaurants r JOIN users u on r.user_id = u.id;"
+      );
+
+      return res.json({
+        success: true,
+        meals: result.rows,
+        ingredients: ingredients.rows,
+        restaurants: restaurants.rows,
+      });
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {

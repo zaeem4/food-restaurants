@@ -102,6 +102,14 @@ function RecentMenus() {
         enableColumnFilter: false,
       },
       {
+        accessorKey: "day",
+        header: "Days of Week",
+        size: 150,
+        createAble: true,
+        enableEditing: true,
+        enableColumnFilter: false,
+      },
+      {
         accessorFn: (row) => new Date(row.created_at),
         accessorKey: "created_at",
         header: "Created On",

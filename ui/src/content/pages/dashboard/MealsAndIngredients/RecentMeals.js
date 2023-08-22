@@ -14,6 +14,10 @@ function RecentMeals() {
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
+  const [extraData, setExtraData] = useState({
+    ingredients: [],
+    restaurants: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -28,6 +32,10 @@ function RecentMeals() {
       const response = await apiGet("/admin/meals");
       if (response.success) {
         setData(response.meals);
+        setExtraData({
+          ingredients: response.ingredients,
+          restaurants: response.restaurants,
+        });
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -203,6 +211,7 @@ function RecentMeals() {
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
+        extraData={extraData}
       />
     </Card>
   );

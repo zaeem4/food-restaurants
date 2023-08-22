@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Button,
@@ -15,13 +15,20 @@ import { LoadingButton } from "@mui/lab";
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewOrderModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewOrderModal = ({ open, columns, onClose, onSubmit, user }) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        acc[column.accessorKey] = " ";
+        if (
+          user.role === "restaurant" &&
+          column.accessorKey === "restaurant_id"
+        ) {
+          acc[column.accessorKey] = user.role_id;
+        } else {
+          acc[column.accessorKey] = " ";
+        }
       }
       return acc;
     }, {})
@@ -86,15 +93,21 @@ const AddNewOrderModal = ({ open, columns, onClose, onSubmit }) => {
               (column) =>
                 column.createAble && (
                   <TextField
-                    required
+                    required={column.accessorKey !== "employee_id"}
                     error={!values[column.accessorKey]}
                     variant="standard"
                     key={column.accessorKey}
                     label={column.header}
                     name={column.accessorKey}
+                    value={values[column.accessorKey]}
                     onChange={(e) =>
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
+                    inputProps={{
+                      readOnly:
+                        user.role === "restaurant" &&
+                        column.accessorKey === "restaurant_id",
+                    }}
                   />
                 )
             )}

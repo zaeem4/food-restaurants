@@ -47,6 +47,11 @@ function RecentOrders() {
             (order) => order.status === "ready"
           );
           setData(orders);
+        } else if (user.role === "restaurant") {
+          const orders = response.orders.filter(
+            (order) => order.restaurant_id === user.role_id
+          );
+          setData(orders);
         } else {
           setData(response.orders);
         }
@@ -102,6 +107,8 @@ function RecentOrders() {
                         ? "#28955A"
                         : row.original.status?.toLowerCase() === "in-progress"
                         ? "#EDB72B"
+                        : row.original.status?.toLowerCase() === "deliver"
+                        ? "#0000FF"
                         : "#BB4C4C",
                   }}
                 >
@@ -125,9 +132,18 @@ function RecentOrders() {
               enableEditing: true,
               enableColumnFilter: false,
             },
+
             {
               accessorKey: "restaurant_id",
               header: "Restaurant ID",
+              size: 50,
+              createAble: true,
+              enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "employee_id",
+              header: "Employee ID",
               size: 50,
               createAble: true,
               enableEditing: true,
@@ -141,7 +157,6 @@ function RecentOrders() {
               enableEditing: false,
               enableColumnFilter: false,
             },
-
             {
               accessorFn: (row) => new Date(row.created_at),
               accessorKey: "created_at",
@@ -204,7 +219,7 @@ function RecentOrders() {
               accessorKey: "status",
               header: "Status",
               size: 150,
-              createAble: true,
+              createAble: false,
               enableEditing: true,
               enableColumnFilter: false,
               Cell: ({ cell, row }) => (
@@ -221,16 +236,24 @@ function RecentOrders() {
               accessorKey: "menus",
               header: "Menu ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
               accessorKey: "company_id",
               header: "Company ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "employee_id",
+              header: "Employee ID",
+              size: 50,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -388,6 +411,7 @@ function RecentOrders() {
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          user={user}
         />
       )}
 
