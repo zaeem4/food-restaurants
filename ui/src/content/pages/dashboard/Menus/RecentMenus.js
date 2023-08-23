@@ -28,6 +28,13 @@ function RecentMenus() {
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
+
+  const [extraData, setExtraData] = useState({
+    meals: [],
+    restaurants: [],
+    days: [],
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -42,6 +49,11 @@ function RecentMenus() {
       const response = await apiGet("/admin/menus");
       if (response.success) {
         setData(response.menus);
+        setExtraData({
+          meals: response.meals,
+          restaurants: response.restaurants,
+          days: response.days,
+        });
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -86,11 +98,27 @@ function RecentMenus() {
         enableColumnFilter: false,
       },
       {
+        accessorKey: "meal",
+        header: "Meal",
+        size: 150,
+        createAble: false,
+        enableEditing: false,
+        enableColumnFilter: false,
+      },
+      {
         accessorKey: "meal_id",
         header: "Meal ID",
         size: 150,
         createAble: true,
         enableEditing: true,
+        enableColumnFilter: false,
+      },
+      {
+        accessorKey: "restaurant",
+        header: "Restaurant",
+        size: 150,
+        createAble: false,
+        enableEditing: false,
         enableColumnFilter: false,
       },
       {
@@ -213,6 +241,7 @@ function RecentMenus() {
         initialState={{
           showGlobalFilter: true,
           showColumnFilters: true,
+          columnVisibility: { restaurant_id: false, meal_id: false },
         }}
         muiToolbarAlertBannerProps={
           isError
@@ -264,6 +293,7 @@ function RecentMenus() {
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          extraData={extraData}
         />
       )}
 

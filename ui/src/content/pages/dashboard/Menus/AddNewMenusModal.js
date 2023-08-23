@@ -9,13 +9,17 @@ import {
   Stack,
   TextField,
   Box,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewMenusModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
@@ -84,7 +88,89 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit }) => {
           >
             {columns.map(
               (column) =>
-                column.createAble && (
+                column.createAble &&
+                (column.accessorKey === "restaurant_id" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Restaurants
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Restaurants"
+                    >
+                      {extraData.restaurants.map((restaurant) => (
+                        <MenuItem key={restaurant.id} value={restaurant.id}>
+                          {restaurant.user_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : column.accessorKey === "meal_id" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Meals
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Meals"
+                    >
+                      {extraData.meals.map((meal) => (
+                        <MenuItem key={meal.id} value={meal.id}>
+                          {meal.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : column.accessorKey === "day" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Days
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Days"
+                    >
+                      {extraData.days.map((day) => (
+                        <MenuItem key={day} value={day}>
+                          {day}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : (
                   <TextField
                     required
                     error={!values[column.accessorKey]}
@@ -96,7 +182,7 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit }) => {
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
                   />
-                )
+                ))
             )}
           </Stack>
           <br />

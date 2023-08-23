@@ -29,6 +29,12 @@ function RecentOrders() {
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
+  const [extraData, setExtraData] = useState({
+    menus: [],
+    restaurants: [],
+    companies: [],
+    status: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -55,6 +61,12 @@ function RecentOrders() {
         } else {
           setData(response.orders);
         }
+        setExtraData({
+          menus: response.menus,
+          restaurants: response.restaurants,
+          companies: response.companies,
+          status: response.status,
+        });
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -103,11 +115,11 @@ function RecentOrders() {
                 <Typography
                   sx={{
                     color:
-                      row.original.status?.toLowerCase() === "ready"
+                      row.original.status?.toLowerCase() === "ready-for-pickup"
                         ? "#28955A"
-                        : row.original.status?.toLowerCase() === "in-progress"
+                        : row.original.status?.toLowerCase() === "in-kitchen"
                         ? "#EDB72B"
-                        : row.original.status?.toLowerCase() === "deliver"
+                        : row.original.status?.toLowerCase() === "deliverd"
                         ? "#0000FF"
                         : "#BB4C4C",
                   }}
@@ -117,11 +129,19 @@ function RecentOrders() {
               ),
             },
             {
-              accessorKey: "menus",
+              accessorKey: "menus_id",
               header: "Menu ID",
               size: 50,
               createAble: true,
               enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "menus",
+              header: "Menus",
+              size: 100,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -132,13 +152,28 @@ function RecentOrders() {
               enableEditing: true,
               enableColumnFilter: false,
             },
-
+            {
+              accessorKey: "company",
+              header: "Company",
+              size: 100,
+              createAble: false,
+              enableEditing: false,
+              enableColumnFilter: false,
+            },
             {
               accessorKey: "restaurant_id",
               header: "Restaurant ID",
               size: 50,
               createAble: true,
               enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "restaurant",
+              header: "Restaurant",
+              size: 50,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -225,7 +260,14 @@ function RecentOrders() {
               Cell: ({ cell, row }) => (
                 <Typography
                   sx={{
-                    color: "#28955A",
+                    color:
+                      row.original.status?.toLowerCase() === "ready-for-pickup"
+                        ? "#28955A"
+                        : row.original.status?.toLowerCase() === "in-kitchen"
+                        ? "#EDB72B"
+                        : row.original.status?.toLowerCase() === "deliverd"
+                        ? "#0000FF"
+                        : "#BB4C4C",
                   }}
                 >
                   {cell.getValue()}
@@ -233,9 +275,17 @@ function RecentOrders() {
               ),
             },
             {
-              accessorKey: "menus",
+              accessorKey: "menus_id",
               header: "Menu ID",
               size: 50,
+              createAble: true,
+              enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "menus",
+              header: "Menus",
+              size: 100,
               createAble: false,
               enableEditing: false,
               enableColumnFilter: false,
@@ -243,6 +293,30 @@ function RecentOrders() {
             {
               accessorKey: "company_id",
               header: "Company ID",
+              size: 50,
+              createAble: true,
+              enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "company",
+              header: "Company",
+              size: 100,
+              createAble: false,
+              enableEditing: false,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "restaurant_id",
+              header: "Restaurant ID",
+              size: 50,
+              createAble: true,
+              enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "restaurant",
+              header: "Restaurant",
               size: 50,
               createAble: false,
               enableEditing: false,
@@ -361,6 +435,11 @@ function RecentOrders() {
         initialState={{
           showGlobalFilter: true,
           showColumnFilters: true,
+          columnVisibility: {
+            restaurant_id: false,
+            menus_id: false,
+            company_id: false,
+          },
         }}
         muiToolbarAlertBannerProps={
           isError
@@ -412,6 +491,7 @@ function RecentOrders() {
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
           user={user}
+          extraData={extraData}
         />
       )}
 

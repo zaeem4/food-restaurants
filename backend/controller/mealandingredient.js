@@ -82,7 +82,7 @@ const getMealsWithIngredients = async (req, res) => {
     if (result.rows) {
       const ingredients = await Pool.query("select * from ingredients;");
       const restaurants = await Pool.query(
-        "select r.*, u.user_name from restaurants r JOIN users u on r.user_id = u.id;"
+        "select r.*, u.user_name from restaurants r LEFT JOIN users u on r.user_id = u.id;"
       );
 
       return res.json({
@@ -104,10 +104,15 @@ const getMealsWithIngredients = async (req, res) => {
 const getIngredientsWithMeals = async (req, res) => {
   try {
     const query = `
-      SELECT i.*, ARRAY_AGG(mi.meal_id) AS meals, ARRAY_AGG(m.name) AS meals_name
+      SELECT i.*, 
+      
+      ARRAY_AGG(mi.meal_id) AS meals, 
+      ARRAY_AGG(m.name) AS meals_name
+      
       FROM ingredients i
       LEFT JOIN mealsingredients mi ON i.id = mi.ingredient_id
       LEFT JOIN meals m on mi.meal_id = m.id
+      
       GROUP BY i.id;
     `;
     const result = await Pool.query(query);
