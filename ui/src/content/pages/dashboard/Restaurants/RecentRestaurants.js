@@ -16,6 +16,9 @@ function RecentRestaurants() {
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
+  const [extraData, setExtraData] = useState({
+    feeTypes: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -30,6 +33,7 @@ function RecentRestaurants() {
       const response = await apiGet("/admin/restaurants");
       if (response.success) {
         setData(response.restaurants);
+        setExtraData({ feeTypes: response.feeTypes });
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -102,6 +106,20 @@ function RecentRestaurants() {
       {
         accessorKey: "email",
         header: "Email",
+        size: 150,
+        createAble: true,
+        enableEditing: true,
+      },
+      {
+        accessorKey: "fee_type",
+        header: "Fee Type",
+        size: 150,
+        createAble: true,
+        enableEditing: true,
+      },
+      {
+        accessorKey: "fee_value",
+        header: "Fee Value",
         size: 150,
         createAble: true,
         enableEditing: true,
@@ -218,6 +236,7 @@ function RecentRestaurants() {
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          extraData={extraData}
         />
       )}
 

@@ -22,8 +22,17 @@ function generateRandomPassword() {
 
 const create = async (req, res) => {
   try {
-    const { user_name, email, address, city, tax_number, phone, owner } =
-      req.body;
+    const {
+      user_name,
+      email,
+      address,
+      city,
+      tax_number,
+      phone,
+      owner,
+      fee_type,
+      fee_value,
+    } = req.body;
     const randomPassword = generateRandomPassword();
     const hashPassword = await BCRYPT.hash(randomPassword, 10);
 
@@ -34,8 +43,17 @@ const create = async (req, res) => {
 
     if (user.rows.length > 0) {
       const query =
-        "INSERT INTO restaurants (id, user_id, address, city, tax_number, phone, owner) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6) RETURNING id";
-      const values = [user.rows[0].id, address, city, tax_number, phone, owner];
+        "INSERT INTO restaurants (id, user_id, address, city, tax_number, phone, owner, fee_type, fee_value) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
+      const values = [
+        user.rows[0].id,
+        address,
+        city,
+        tax_number,
+        phone,
+        owner,
+        fee_type,
+        fee_value,
+      ];
 
       const restaurant = await Pool.query(query, values);
 
@@ -59,7 +77,15 @@ const getAllRestaurantsWithUsers = async (req, res) => {
     `;
     const result = await Pool.query(query);
     if (result.rows) {
-      return res.json({ success: true, restaurants: result.rows });
+      return res.json({
+        success: true,
+        restaurants: result.rows,
+        feeTypes: [
+          "fixed amount",
+          "fixed amount per order",
+          "fixed percentage per order",
+        ],
+      });
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {

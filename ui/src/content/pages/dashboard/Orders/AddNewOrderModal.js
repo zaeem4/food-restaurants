@@ -198,7 +198,7 @@ const AddNewOrderModal = ({
                     key={column.accessorKey}
                   >
                     <InputLabel id={`${column.accessorKey}-label`}>
-                    Restaurants
+                      Restaurants
                     </InputLabel>
                     <Select
                       labelId={`${column.accessorKey}-label`}
@@ -219,9 +219,36 @@ const AddNewOrderModal = ({
                       ))}
                     </Select>
                   </FormControl>
+                ) : column.accessorKey === "employee_id" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Employees
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Employees"
+                    >
+                      {extraData.employees.map((employee) => (
+                        <MenuItem key={employee.id} value={employee.id}>
+                          {employee.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 ) : (
                   <TextField
-                    required={column.accessorKey !== "employee_id"}
+                    required
                     error={!values[column.accessorKey]}
                     variant="standard"
                     key={column.accessorKey}

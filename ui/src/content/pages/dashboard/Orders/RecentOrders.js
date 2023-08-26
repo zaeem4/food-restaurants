@@ -34,6 +34,7 @@ function RecentOrders() {
     restaurants: [],
     companies: [],
     status: [],
+    emloyees: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -66,6 +67,7 @@ function RecentOrders() {
           restaurants: response.restaurants,
           companies: response.companies,
           status: response.status,
+          employees: response.employees,
         });
       } else {
         setIsError(true);
@@ -182,6 +184,14 @@ function RecentOrders() {
               size: 50,
               createAble: true,
               enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "employee",
+              header: "Employee",
+              size: 50,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -331,6 +341,14 @@ function RecentOrders() {
               enableColumnFilter: false,
             },
             {
+              accessorKey: "employee",
+              header: "Employee",
+              size: 50,
+              createAble: false,
+              enableEditing: false,
+              enableColumnFilter: false,
+            },
+            {
               accessorFn: (row) => new Date(row.created_at),
               accessorKey: "created_at",
               header: "Created On",
@@ -439,6 +457,7 @@ function RecentOrders() {
             restaurant_id: false,
             menus_id: false,
             company_id: false,
+            employee_id: false,
           },
         }}
         muiToolbarAlertBannerProps={

@@ -25,6 +25,8 @@ CREATE TABLE restaurants (
     tax_number VARCHAR(20) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     owner VARCHAR(255) NOT NULL,
+    fee_type VARCHAR(255) NOT NULL,
+    fee_value VARCHAR(255) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
@@ -68,6 +70,7 @@ CREATE TABLE companies (
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE TABLE employees (
   id serial PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -108,7 +111,12 @@ CREATE TABLE invoices (
   id serial PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   file_location VARCHAR(255),
+  start_date DATE,
+  end_date DATE,
+  amount DECIMAL(10, 2) NOT NULL,
+  fee DECIMAL(10, 2) NOT NULL,
   restaurant_id bigint REFERENCES restaurants(id),
+  company_id bigint REFERENCES companies(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

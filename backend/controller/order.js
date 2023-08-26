@@ -72,7 +72,8 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
           ARRAY_AGG(DISTINCT i.name) AS ingredient_names,
           ARRAY_AGG(DISTINCT m.name) AS menus,
           ARRAY_AGG(DISTINCT u.user_name) AS company,
-          ARRAY_AGG(DISTINCT ur.user_name) AS restaurant
+          ARRAY_AGG(DISTINCT ur.user_name) AS restaurant,
+          ARRAY_AGG(DISTINCT e.name) AS employee
           
           FROM Orders o
           
@@ -84,6 +85,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
           LEFT JOIN users u on c.user_id = u.id
           LEFT JOIN restaurants r on o.restaurant_id = r.id
           LEFT JOIN users ur on r.user_id = ur.id
+          LEFT JOIN employees e on o.employee_id = e.id
           
           GROUP BY o.id;
     `;
@@ -97,6 +99,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
       const companies = await Pool.query(
         "select c.*, u.user_name from companies c LEFT JOIN users u on c.user_id = u.id;"
       );
+      const employees = await Pool.query("select * from employees;");
 
       return res.json({
         success: true,
@@ -104,7 +107,8 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
         menus: menus.rows,
         restaurants: restaurants.rows,
         companies: companies.rows,
-        status: ["ready-for-pickup", "in-kitchen", "deliverd", "Wednesday"],
+        employees: employees.rows,
+        status: ["ready-for-pickup", "in-kitchen", "deliverd"],
       });
     }
     return res.json({ success: false, error: "error in db" });

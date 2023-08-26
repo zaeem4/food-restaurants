@@ -9,13 +9,23 @@ import {
   Stack,
   TextField,
   Box,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewRestaurantModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewRestaurantModal = ({
+  open,
+  columns,
+  onClose,
+  onSubmit,
+  extraData,
+}) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
@@ -85,7 +95,35 @@ const AddNewRestaurantModal = ({ open, columns, onClose, onSubmit }) => {
           >
             {columns.map(
               (column) =>
-                column.createAble && (
+                column.createAble &&
+                (column.accessorKey === "fee_type" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Fee Type
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Fee Type"
+                    >
+                      {extraData.feeTypes.map((feeType) => (
+                        <MenuItem key={feeType} value={feeType}>
+                          {feeType}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : (
                   <TextField
                     required
                     error={!values[column.accessorKey]}
@@ -97,7 +135,7 @@ const AddNewRestaurantModal = ({ open, columns, onClose, onSubmit }) => {
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
                   />
-                )
+                ))
             )}
           </Stack>
           <br />
