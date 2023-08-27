@@ -21,11 +21,11 @@ import MaterialReactTable from "material-react-table";
 import { apiGet } from "src/utils/axios";
 
 import AddNewOrderModal from "./AddNewOrderModal.js";
-import EditOrderModal from "./EditOrderModal.js";
+
+import ChangeOrderStatus from "./changeOrderStatus.js";
 
 function RecentOrders() {
   const user = useSelector((state) => state.user.value);
-
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
@@ -48,10 +48,11 @@ function RecentOrders() {
       setIsLoading(true);
 
       const response = await apiGet("/admin/orders");
+      console.log(response);
       if (response.success) {
         if (user.role === "rider") {
           const orders = response.orders.filter(
-            (order) => order.status === "ready"
+            (order) => order.status === "ready-for-pickup"
           );
           setData(orders);
         } else if (user.role === "restaurant") {
@@ -121,7 +122,7 @@ function RecentOrders() {
                         ? "#28955A"
                         : row.original.status?.toLowerCase() === "in-kitchen"
                         ? "#EDB72B"
-                        : row.original.status?.toLowerCase() === "deliverd"
+                        : row.original.status?.toLowerCase() === "delivered"
                         ? "#0000FF"
                         : "#BB4C4C",
                   }}
@@ -230,34 +231,6 @@ function RecentOrders() {
               createAble: false,
               enableEditing: false,
             },
-            {
-              accessorFn: (row) => new Date(row.updated_at),
-              accessorKey: "updated_at",
-              header: "Updated On",
-              filterFn: "lessThanOrEqualTo",
-              sortingFn: "datetime",
-              filterVariant: "datetime",
-              Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-              Header: ({ column }) => <em>{column.columnDef.header}</em>,
-              Filter: ({ column }) => (
-                <DatePicker
-                  onChange={(newValue) => {
-                    column.setFilterValue(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      helperText={"Filter Mode: less Than"}
-                      sx={{ minWidth: "120px" }}
-                      variant="standard"
-                    />
-                  )}
-                  value={column.getFilterValue()}
-                />
-              ),
-              createAble: false,
-              enableEditing: false,
-            },
           ]
         : [
             {
@@ -275,7 +248,7 @@ function RecentOrders() {
                         ? "#28955A"
                         : row.original.status?.toLowerCase() === "in-kitchen"
                         ? "#EDB72B"
-                        : row.original.status?.toLowerCase() === "deliverd"
+                        : row.original.status?.toLowerCase() === "delivered"
                         ? "#0000FF"
                         : "#BB4C4C",
                   }}
@@ -376,34 +349,6 @@ function RecentOrders() {
               createAble: false,
               enableEditing: false,
             },
-            {
-              accessorFn: (row) => new Date(row.updated_at),
-              accessorKey: "updated_at",
-              header: "Updated On",
-              filterFn: "lessThanOrEqualTo",
-              sortingFn: "datetime",
-              filterVariant: "datetime",
-              Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-              Header: ({ column }) => <em>{column.columnDef.header}</em>,
-              Filter: ({ column }) => (
-                <DatePicker
-                  onChange={(newValue) => {
-                    column.setFilterValue(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      helperText={"Filter Mode: less Than"}
-                      sx={{ minWidth: "120px" }}
-                      variant="standard"
-                    />
-                  )}
-                  value={column.getFilterValue()}
-                />
-              ),
-              createAble: false,
-              enableEditing: false,
-            },
           ],
     []
   );
@@ -425,7 +370,7 @@ function RecentOrders() {
           })}
         >
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-          {user.role !== "rider" && (
+          {user.role === "restaurant" && (
             <Box>
               <Button
                 variant="contained"
@@ -474,9 +419,9 @@ function RecentOrders() {
           },
         }}
         renderRowActions={({ row }) =>
-          !["rider", "restaurant", "company"].includes(user.role) && (
+          !["company"].includes(user.role) && (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip arrow placement="left" title="Edit Details">
+              <Tooltip arrow placement="left" title="Change Status">
                 <span>
                   <IconButton
                     onClick={(e) => {
@@ -515,12 +460,15 @@ function RecentOrders() {
       )}
 
       {editModalOpen && (
-        <EditOrderModal
+        <ChangeOrderStatus
           columns={columns}
           open={editModalOpen}
           onClose={() => setEditModalOpen(false)}
           onSubmit={handleCreateNewRow}
           row={currentRow}
+          fetchOrders={fetchOrders}
+          statuses={extraData.status}
+
         />
       )}
     </Card>

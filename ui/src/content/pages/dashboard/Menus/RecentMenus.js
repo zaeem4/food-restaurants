@@ -15,16 +15,17 @@ import {
   TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 import MaterialReactTable from "material-react-table";
+import Swal from "sweetalert2";
 
-import { apiGet } from "src/utils/axios";
+import { apiGet,apiPost } from "src/utils/axios";
 
 import AddNewMenusModal from "./AddNewMenusModal.js";
 import EditMenusModal from "./EditMenusModal.js";
 
 function RecentMenus() {
   const user = useSelector((state) => state.user.value);
-
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
@@ -63,6 +64,44 @@ function RecentMenus() {
       setIsLoading(false);
     } catch (error) {
       setIsError(true);
+      setIsLoading(false);
+    }
+  };
+
+  const placeOrder = async (row) => {
+    const orderObject = {
+      'name':row.name,
+      'restaurant_id':row.restaurant_id,
+      'menus_id':row.id,
+      'status':'pending',
+      'company_id': user.role_id,
+      'employee_id':null
+    };
+    try {
+      setIsLoading(true);
+      const data = await apiPost(`/admin/orders/create`, orderObject);
+
+      if (data.success) {
+        setIsLoading(false);
+        Swal.fire({
+          icon: "success",
+          title: "Successfully Placed",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+
+        setIsLoading(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
       setIsLoading(false);
     }
   };
@@ -165,34 +204,6 @@ function RecentMenus() {
         createAble: false,
         enableEditing: false,
       },
-      {
-        accessorFn: (row) => new Date(row.updated_at),
-        accessorKey: "updated_at",
-        header: "Updated On",
-        filterFn: "lessThanOrEqualTo",
-        sortingFn: "datetime",
-        filterVariant: "datetime",
-        Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
-        Header: ({ column }) => <em>{column.columnDef.header}</em>,
-        Filter: ({ column }) => (
-          <DatePicker
-            onChange={(newValue) => {
-              column.setFilterValue(newValue);
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                helperText={"Filter Mode: less Than"}
-                sx={{ minWidth: "120px" }}
-                variant="standard"
-              />
-            )}
-            value={column.getFilterValue()}
-          />
-        ),
-        createAble: false,
-        enableEditing: false,
-      },
     ],
     []
   );
@@ -257,7 +268,7 @@ function RecentMenus() {
           },
         }}
         renderRowActions={({ row }) =>
-          !["restaurant", "company"].includes(user.role) && (
+          !["restaurant", "company"].includes(user.role) ? (
             <Box sx={{ display: "flex", gap: "1rem" }}>
               <Tooltip arrow placement="left" title="Edit Details">
                 <span>
@@ -272,7 +283,22 @@ function RecentMenus() {
                 </span>
               </Tooltip>
             </Box>
-          )
+          ) : ["company"].includes(user.role) ? (
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              <Tooltip arrow placement="left" title="Place Order">
+                <span>
+                  <IconButton
+                    onClick={(e) => {
+                      setCurrentRow(row.original);
+                      placeOrder(row.original);
+                    }}
+                  >
+                   <RestaurantIcon/>
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+          ) : null
         }
         globalFilterModeOptions={["fuzzy", "startsWith"]}
         muiSearchTextFieldProps={{

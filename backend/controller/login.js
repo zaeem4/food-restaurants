@@ -22,6 +22,7 @@ const verify = async (req, res) => {
           {
             email: userDetails.email,
             role: userDetails.role,
+            id: userDetails.id,
           },
           process.env.TOKEN_KEY,
           {

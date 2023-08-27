@@ -49,8 +49,8 @@ const create = async (req, res) => {
         LEFT JOIN OrdersMenus om ON o.id = om.order_id
         LEFT JOIN menus mu ON om.menu_id = mu.id
         LEFT JOIN meals me ON mu.meal_id = me.id
-        WHERE o.created_at >= '${start_date.split("T")[0]}' 
-        AND o.created_at <= '${end_date.split("T")[0]}'
+        WHERE o.created_at >= '${start_date}' 
+        AND o.created_at <= '${end_date}'
         AND o.restaurant_id = '${restaurant_id}'
         GROUP BY o.id;
     `;

@@ -251,7 +251,7 @@ function RecentInvoices() {
             })}
           >
             <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-            {!["restaurant"].includes(user.role) && (
+            {!["company", 'rider', 'kitchen'].includes(user.role) && (
               <Box>
                 <Button
                   variant="contained"

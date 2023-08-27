@@ -6,13 +6,14 @@ const create = async (req, res) => {
   try {
     const { name, status, company_id, restaurant_id, employee_id, menus_id } =
       req.body;
-
+      
     let employee;
     if (!employee_id || employee_id === " ") {
       employee = null;
     } else {
       employee = employee_id;
     }
+
 
     const query = `
         INSERT INTO Orders (name, status, company_id, restaurant_id, employee_id)
@@ -56,6 +57,23 @@ const create = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || order(create).js | ${error}`);
+    return res.json({ success: false, error: error });
+  }
+};
+
+const updateOrderStatus = async (req, res) => {
+  try {
+    const newOrderStatus = req.body.status;
+    const orderID = req.params.id;
+
+    let updateOrderStatusQuery = `UPDATE orders SET status = '${newOrderStatus}' WHERE id = '${orderID}'`;
+    const updated = await Pool.query(updateOrderStatusQuery);
+    console.log(updated);
+    if (updated?.rowCount) {
+      return res.json({ success: true, message: 'Status Has Been Changed Successfully' });
+    }
+  } catch (e) {
+    console.log(`400 || order(updateStatus).js | ${e}`);
     return res.json({ success: false, error: error });
   }
 };
@@ -108,7 +126,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
         restaurants: restaurants.rows,
         companies: companies.rows,
         employees: employees.rows,
-        status: ["ready-for-pickup", "in-kitchen", "deliverd"],
+        status: ['pending',"ready-for-pickup", "in-kitchen", "delivered"],
       });
     }
     return res.json({ success: false, error: "error in db" });
@@ -121,4 +139,5 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
 module.exports = {
   create,
   getOrdersWithMenusAndIngredients,
+  updateOrderStatus
 };

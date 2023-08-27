@@ -107,7 +107,6 @@ function Home() {
                   </Typography>
                   <br />
                   <Typography variant="caption" gutterBottom>
-                    Last Credited: <b> Rs 10000 </b> <br />
                     Date: <b> {`${new Date().toDateString()}`} </b>
                   </Typography>
                 </Box>
@@ -122,7 +121,6 @@ function Home() {
                   </Typography>
                   <br />
                   <Typography variant="caption" gutterBottom>
-                    Recent Joining: <b> 10 </b> <br />
                     Date: <b> {`${new Date().toDateString()}`} </b>
                   </Typography>
                 </Box>
