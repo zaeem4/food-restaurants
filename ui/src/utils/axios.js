@@ -53,6 +53,22 @@ export const apiPost = async (api, body) => {
   );
   return res.data;
 };
+
+export const apiPostFile = async (api, body) => {
+  const headers = {
+    "Content-Type": "multipart/form-data",
+    "x-access-token": localStorage.getItem("token"),
+  };
+  const res = await axiosInstance.post(
+    `${process.env.REACT_APP_SERVER_URL}${api}`,
+    body,
+    {
+      headers,
+    }
+  );
+  return res.data;
+};
+
 export const apiPut = async (api, body) => {
   const headers = {
     "Content-Type": "application/json",

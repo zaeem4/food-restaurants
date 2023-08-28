@@ -52,6 +52,7 @@ const verify = async (req, res) => {
           );
           role = role.rows[0];
           userDetails["role_id"] = role.id;
+          userDetails["restaurant_id"] = role.restaurant_id;
         }
 
         userDetails.permissions =
