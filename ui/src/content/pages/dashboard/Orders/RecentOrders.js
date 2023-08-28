@@ -17,12 +17,13 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import { apiGet } from "src/utils/axios";
 
 import AddNewOrderModal from "./AddNewOrderModal.js";
 
-import ChangeOrderStatus from "./changeOrderStatus.js";
+import ChangeOrderStatus from "./ChangeOrderStatus.js";
 
 function RecentOrders() {
   const user = useSelector((state) => state.user.value);
@@ -48,7 +49,7 @@ function RecentOrders() {
       setIsLoading(true);
 
       const response = await apiGet("/admin/orders");
-      console.log(response);
+
       if (response.success) {
         if (user.role === "rider") {
           const orders = response.orders.filter(
@@ -58,6 +59,13 @@ function RecentOrders() {
         } else if (user.role === "restaurant") {
           const orders = response.orders.filter(
             (order) => order.restaurant_id === user.role_id
+          );
+          setData(orders);
+        } else if (user.role === "kitchen") {
+          const orders = response.orders.filter(
+            (order) =>
+              order.status === "in-kitchen" &&
+              order.restaurant_id === user.restaurant_id
           );
           setData(orders);
         } else {
@@ -421,16 +429,16 @@ function RecentOrders() {
         renderRowActions={({ row }) =>
           !["company"].includes(user.role) && (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip arrow placement="left" title="Change Status">
+              <Tooltip title="Change Status">
                 <span>
-                  <IconButton
+                  <AutorenewIcon
                     onClick={(e) => {
                       setCurrentRow(row.original);
                       setEditModalOpen(true);
                     }}
                   >
                     <EditIcon />
-                  </IconButton>
+                  </AutorenewIcon>
                 </span>
               </Tooltip>
             </Box>
@@ -461,14 +469,11 @@ function RecentOrders() {
 
       {editModalOpen && (
         <ChangeOrderStatus
-          columns={columns}
           open={editModalOpen}
           onClose={() => setEditModalOpen(false)}
           onSubmit={handleCreateNewRow}
           row={currentRow}
-          fetchOrders={fetchOrders}
-          statuses={extraData.status}
-
+          extraData={extraData}
         />
       )}
     </Card>

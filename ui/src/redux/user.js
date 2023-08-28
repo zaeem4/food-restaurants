@@ -15,6 +15,7 @@ const initialStateValue = {
     orders: false,
     employees: false,
     reports: false,
+    kitchens: false,
   },
   role_id: 0,
 };

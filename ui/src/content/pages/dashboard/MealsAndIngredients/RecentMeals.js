@@ -186,7 +186,7 @@ function RecentMeals() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="Edit Details">
+            <Tooltip cursor title="Edit Details">
               <span>
                 <IconButton onClick={() => {}}>
                   <EditIcon />

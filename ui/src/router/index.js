@@ -44,6 +44,9 @@ const Orders = Loader(lazy(() => import("src/content/pages/dashboard/Orders")));
 const Employees = Loader(
   lazy(() => import("src/content/pages/dashboard/Employees"))
 );
+const Kitchens = Loader(
+  lazy(() => import("src/content/pages/dashboard/Kitchens"))
+);
 // Components
 
 // Status
@@ -147,7 +150,7 @@ const getRoute = () => {
             <Navigate to="/dashboard/menus" />
           ) : user.role === "company" ? (
             <Navigate to="/dashboard/menus" />
-          ) : user.role === "rider" ? (
+          ) : ["rider", "kitchen"].includes(user.role) ? (
             <Navigate to="/dashboard/orders" />
           ) : (
             <Navigate to="status/403" />
@@ -266,6 +269,23 @@ const getRoute = () => {
               path: "lists",
               element: user.permissions?.employees ? (
                 <Employees />
+              ) : (
+                <Navigate to="status/403" />
+              ),
+            },
+          ],
+        },
+        {
+          path: "kitchens",
+          children: [
+            {
+              path: "",
+              element: <Navigate to="lists" replace />,
+            },
+            {
+              path: "lists",
+              element: user.permissions?.kitchens ? (
+                <Kitchens />
               ) : (
                 <Navigate to="status/403" />
               ),

@@ -192,7 +192,7 @@ function RecentCompanies() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip arrow placement="left" title="Edit Details">
+            {/* <Tooltip cursor placement="left" title="Edit Details">
               <span>
                 <IconButton
                   onClick={(e) => {
@@ -203,7 +203,7 @@ function RecentCompanies() {
                   <EditIcon />
                 </IconButton>
               </span>
-            </Tooltip>
+            </Tooltip> */}
           </Box>
         )}
         globalFilterModeOptions={["fuzzy", "startsWith"]}

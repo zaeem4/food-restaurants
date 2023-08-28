@@ -46,12 +46,20 @@ const verify = async (req, res) => {
           );
           role = role.rows[0];
           userDetails["role_id"] = role.id;
+        } else if (userDetails.role === "kitchen") {
+          let role = await Pool.query(
+            `select * from kitchens where user_id = '${userDetails.id}';`
+          );
+          role = role.rows[0];
+          userDetails["role_id"] = role.id;
         }
 
         userDetails.permissions =
           permissions.rows.length > 0 ? permissions.rows[0].scope : {};
 
         delete userDetails["password"];
+        delete userDetails["created_at"];
+        delete userDetails["updated_at"];
 
         return res.json({
           success: true,

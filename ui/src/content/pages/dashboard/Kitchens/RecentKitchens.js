@@ -1,24 +1,21 @@
 import { useMemo, useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-
 import MaterialReactTable from "material-react-table";
-
-import AddNewRestaurantModal from "./AddNewRestaurantModal.js";
-import EditRestaurantModal from "./EditRestaurantModal.js";
 
 import { apiGet } from "src/utils/axios";
 
-function RecentRestaurants() {
+import AddNewKitchensModal from "./AddNewKitchensModal.js";
+
+function RecentKitchens() {
+  const user = useSelector((state) => state.user.value);
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
-  const [extraData, setExtraData] = useState({
-    feeTypes: [],
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -26,14 +23,16 @@ function RecentRestaurants() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState({});
 
-  const fetchRestaurants = async () => {
+  const fetchKitchens = async () => {
     try {
       setIsLoading(true);
 
-      const response = await apiGet("/admin/restaurants");
+      const response = await apiGet("/admin/Kitchens");
       if (response.success) {
-        setData(response.restaurants);
-        setExtraData({ feeTypes: response.feeTypes });
+        const kitchens = response.kitchens.filter(
+          (kitchen) => kitchen.restaurant_id === user.role_id
+        );
+        setData(kitchens);
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -48,11 +47,11 @@ function RecentRestaurants() {
   };
 
   const handleCreateNewRow = (values) => {
-    fetchRestaurants();
+    fetchKitchens();
   };
 
   useEffect(() => {
-    fetchRestaurants();
+    fetchKitchens();
 
     return () => {
       setData([]);
@@ -63,66 +62,24 @@ function RecentRestaurants() {
     () => [
       {
         accessorKey: "user_name",
-        header: "Name",
+        header: "name",
         size: 150,
         createAble: true,
-        enableEditing: true,
-      },
-      {
-        accessorKey: "address",
-        header: "Address",
-        size: 150,
-        createAble: true,
-        enableEditing: true,
-      },
-      {
-        accessorKey: "phone",
-        header: "Phone Number",
-        size: 200,
-        createAble: true,
-        enableEditing: true,
-      },
-      {
-        accessorKey: "owner",
-        header: "Owner",
-        size: 150,
-        createAble: true,
-        enableEditing: true,
-      },
-      {
-        accessorKey: "city",
-        header: "City",
-        size: 150,
-        createAble: true,
-        enableEditing: true,
-      },
-      {
-        accessorKey: "tax_number",
-        header: "Tax Number",
-        size: 150,
-        createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "email",
         header: "Email",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
-        accessorKey: "fee_type",
-        header: "Fee Type",
+        accessorKey: "description",
+        header: "Description",
         size: 150,
         createAble: true,
-        enableEditing: true,
-      },
-      {
-        accessorKey: "fee_value",
-        header: "Fee Value",
-        size: 150,
-        createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -206,12 +163,7 @@ function RecentRestaurants() {
           <Box sx={{ display: "flex", gap: "1rem" }}>
             <Tooltip cursor title="Edit Details">
               <span>
-                <IconButton
-                  onClick={(e) => {
-                    setCurrentRow(row.original);
-                    setEditModalOpen(true);
-                  }}
-                >
+                <IconButton onClick={() => {}}>
                   <EditIcon />
                 </IconButton>
               </span>
@@ -229,28 +181,15 @@ function RecentRestaurants() {
           showAlertBanner: isError,
         }}
       />
-
-      {createModalOpen && (
-        <AddNewRestaurantModal
-          columns={columns}
-          open={createModalOpen}
-          onClose={() => setCreateModalOpen(false)}
-          onSubmit={handleCreateNewRow}
-          extraData={extraData}
-        />
-      )}
-
-      {editModalOpen && (
-        <EditRestaurantModal
-          columns={columns}
-          open={editModalOpen}
-          onClose={() => setEditModalOpen(false)}
-          onSubmit={handleCreateNewRow}
-          row={currentRow}
-        />
-      )}
+      <AddNewKitchensModal
+        columns={columns}
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreateNewRow}
+        user={user}
+      />
     </Card>
   );
 }
 
-export default RecentRestaurants;
+export default RecentKitchens;

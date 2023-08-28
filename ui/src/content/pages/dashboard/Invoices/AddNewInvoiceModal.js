@@ -26,6 +26,7 @@ const AddNewInvoiceModal = ({
   onClose,
   onSubmit,
   extraData,
+  user,
 }) => {
   const [spinner, setSpinner] = useState(false);
 
@@ -36,7 +37,14 @@ const AddNewInvoiceModal = ({
           column.accessorKey === "start_date" ||
           column.accessorKey === "end_date"
         ) {
-          acc[column.accessorKey] = new Date().toLocaleDateString();
+          acc[column.accessorKey] = new Date()
+            .toLocaleDateString()
+            .replaceAll("/", "-");
+        } else if (
+          user.role === "restaurant" &&
+          column.accessorKey === "restaurant_id"
+        ) {
+          acc[column.accessorKey] = user.role_id;
         } else {
           acc[column.accessorKey] = " ";
         }
@@ -110,7 +118,7 @@ const AddNewInvoiceModal = ({
                     // error={!values[column.accessorKey]}
                     value={
                       values[column.accessorKey] ??
-                      new Date().toLocaleDateString().replaceAll("/","-")
+                      new Date().toLocaleDateString().replaceAll("/", "-")
                     }
                     renderInput={(params) => (
                       <TextField
@@ -136,7 +144,7 @@ const AddNewInvoiceModal = ({
                     // error={!values[column.accessorKey]}
                     value={
                       values[column.accessorKey] ??
-                      new Date().toLocaleDateString().replaceAll("/","-")
+                      new Date().toLocaleDateString().replaceAll("/", "-")
                     }
                     renderInput={(params) => (
                       <TextField
@@ -165,7 +173,11 @@ const AddNewInvoiceModal = ({
                     <Select
                       labelId={`${column.accessorKey}-label`}
                       name={column.accessorKey}
-                      value={values[column.accessorKey]}
+                      value={
+                        user.role === "restaurant"
+                          ? user.role_id
+                          : values[column.accessorKey]
+                      }
                       onChange={(e) =>
                         setValues({
                           ...values,
@@ -173,10 +185,38 @@ const AddNewInvoiceModal = ({
                         })
                       }
                       label="Restaurants"
+                      inputProps={{ readOnly: user.role === "restaurant" }}
                     >
                       {extraData.restaurants.map((restaurant) => (
                         <MenuItem key={restaurant.id} value={restaurant.id}>
                           {restaurant.user_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : column.accessorKey === "company_id" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Companies
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Companies"
+                    >
+                      {extraData.companies.map((company) => (
+                        <MenuItem key={company.id} value={company.id}>
+                          {company.user_name}
                         </MenuItem>
                       ))}
                     </Select>

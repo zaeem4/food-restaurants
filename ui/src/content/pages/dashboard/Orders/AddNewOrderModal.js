@@ -27,7 +27,6 @@ const AddNewOrderModal = ({
   user,
   extraData,
 }) => {
-  console.log(extraData);
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
@@ -203,7 +202,11 @@ const AddNewOrderModal = ({
                     <Select
                       labelId={`${column.accessorKey}-label`}
                       name={column.accessorKey}
-                      value={values[column.accessorKey]}
+                      value={
+                        user.role === "restaurant"
+                          ? user.role_id
+                          : values[column.accessorKey]
+                      }
                       onChange={(e) =>
                         setValues({
                           ...values,
@@ -211,6 +214,7 @@ const AddNewOrderModal = ({
                         })
                       }
                       label="Restaurants"
+                      inputProps={{ readOnly: user.role === "restaurant" }}
                     >
                       {extraData.restaurants.map((restaurant) => (
                         <MenuItem key={restaurant.id} value={restaurant.id}>

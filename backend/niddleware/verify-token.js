@@ -3,7 +3,7 @@ const JWT = require("jsonwebtoken");
 const Logger = require("../utils/logger");
 
 const AuthMiddleware = (req, res, next) => {
-  const roles = ["admin", "restaurant", "company", "rider"];
+  const roles = ["admin", "restaurant", "company", "rider", "kitchen"];
   try {
     const token =
       req.body.token || req.query.token || req.headers["x-access-token"];
@@ -15,7 +15,7 @@ const AuthMiddleware = (req, res, next) => {
     }
 
     const decoded = JWT.verify(token, process.env.TOKEN_KEY);
-    
+
     if (!roles.includes(decoded.role)) {
       return res.status(402).send({ success: false, error: "Not Authorized" });
     }

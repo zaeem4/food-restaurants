@@ -15,6 +15,7 @@ const companyController = require("./controller/company");
 const menuController = require("./controller/menu");
 const orderController = require("./controller/order");
 const employeeController = require("./controller/employee");
+const kitchenController = require("./controller/kitchen");
 
 const { AuthMiddleware } = require("./niddleware/verify-token");
 
@@ -65,6 +66,9 @@ app.group("/api/admin", (router) => {
 
   router.get("/employees", employeeController.get);
   router.post("/employees/create", employeeController.create);
+
+  router.get("/kitchens", kitchenController.get);
+  router.post("/kitchens/create", kitchenController.create);
 });
 
 app.listen(process.env.SERVER_PORT, () => {

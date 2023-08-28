@@ -1,46 +1,50 @@
 import { useState } from "react";
 
-
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Stack,
-    Box,
-    InputLabel,
-    FormControl,
-    Select,
-    MenuItem
-  } from "@mui/material";
-  
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Box,
+} from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
-import { apiPut } from "src/utils/axios";
+import { apiPost } from "src/utils/axios";
 
-const ChangeOrderStatus = ({ open, columns, onClose, onSubmit, row,fetchOrders,statuses }) => {
-    console.log(row);
+const AddNewKitchensModal = ({ open, columns, onClose, onSubmit, user }) => {
   const [spinner, setSpinner] = useState(false);
 
-  const [latestStatus, setLatestStatus] = useState();
+  const [values, setValues] = useState(() =>
+    columns.reduce((acc, column) => {
+      if (column.accessorKey && column.createAble) {
+        acc[column.accessorKey] = " ";
+      }
+      return acc;
+    }, {})
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setSpinner(true);
-      const data = await apiPut(`/admin/order/${row.order_id}`, latestStatus);
+      const data = await apiPost(`/admin/kitchens/create`, {
+        ...values,
+        restaurant_id: user.role_id,
+      });
 
       if (data.success) {
+        onSubmit(values);
         setSpinner(false);
         onClose();
         Swal.fire({
           icon: "success",
-          title: "Successfully Changed",
-          text:'Order status has been changed!'
+          title: "Successfully created",
+          text: `Password is ${data.password}`,
         });
-        fetchOrders();
       } else {
         Swal.fire({
           icon: "error",
@@ -62,7 +66,7 @@ const ChangeOrderStatus = ({ open, columns, onClose, onSubmit, row,fetchOrders,s
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Change Order Status</DialogTitle>
+      <DialogTitle>Add New Kitchens</DialogTitle>
       <DialogContent sx={{ paddingTop: "6px!important" }}>
         <Box
           component="form"
@@ -82,31 +86,22 @@ const ChangeOrderStatus = ({ open, columns, onClose, onSubmit, row,fetchOrders,s
               gap: "1.5rem",
             }}
           >
-            <FormControl
-                  sx={{ m: 1, width: 200 }}
-                  key='status'
-                >
-                  <InputLabel id={`status-label`}>
-                    Status
-                  </InputLabel>
-                  <Select
-                    name='status'
-                    value={latestStatus}
+            {columns.map(
+              (column) =>
+                column.createAble && (
+                  <TextField
+                    required
+                    error={!values[column.accessorKey]}
+                    variant="standard"
+                    key={column.accessorKey}
+                    label={column.header}
+                    name={column.accessorKey}
                     onChange={(e) =>
-                        setLatestStatus({
-                            [e.target.name]: e.target.value,
-                          })
+                      setValues({ ...values, [e.target.name]: e.target.value })
                     }
-                    label="Status"
-                  >
-                      {statuses.map((status) => (
-                        <MenuItem key={status.id} value={status}>
-                          {status}
-                        </MenuItem>
-                      ))}
-                      </Select>
-
-                </FormControl>
+                  />
+                )
+            )}
           </Stack>
           <br />
           <DialogActions sx={{ justifyContent: "center" }}>
@@ -119,7 +114,7 @@ const ChangeOrderStatus = ({ open, columns, onClose, onSubmit, row,fetchOrders,s
               variant="contained"
               loading={spinner}
             >
-              Edit
+              Add
             </LoadingButton>
           </DialogActions>
         </Box>
@@ -128,4 +123,4 @@ const ChangeOrderStatus = ({ open, columns, onClose, onSubmit, row,fetchOrders,s
   );
 };
 
-export default ChangeOrderStatus;
+export default AddNewKitchensModal;

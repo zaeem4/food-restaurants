@@ -46,9 +46,17 @@ function RecentInvoices() {
 
       const response = await apiGet("/admin/invoices");
       if (response.success) {
-        setData(response.invoices);
+        if (user.role === "rider") {
+          const invoices = response.invoices.filter(
+            (invoice) => invoice.restaurant_id === user.role_id
+          );
+          setData(invoices);
+        } else {
+          setData(response.invoices);
+        }
         setExtraData({
           restaurants: response.restaurants,
+          companies: response.companies,
         });
       } else {
         setIsError(true);
@@ -100,6 +108,22 @@ function RecentInvoices() {
       {
         accessorKey: "restaurant",
         header: "restaurant",
+        size: 150,
+        createAble: false,
+        enableEditing: false,
+        enableColumnFilter: false,
+      },
+      {
+        accessorKey: "company_id",
+        header: "Company ID",
+        size: 150,
+        createAble: user.role === "restaurant",
+        enableEditing: false,
+        enableColumnFilter: false,
+      },
+      {
+        accessorKey: "company",
+        header: "Company",
         size: 150,
         createAble: false,
         enableEditing: false,
@@ -251,7 +275,7 @@ function RecentInvoices() {
             })}
           >
             <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-            {!["company", 'rider', 'kitchen'].includes(user.role) && (
+            {!["company", "rider", "kitchen"].includes(user.role) && (
               <Box>
                 <Button
                   variant="contained"
@@ -279,7 +303,12 @@ function RecentInvoices() {
           initialState={{
             showGlobalFilter: true,
             showColumnFilters: true,
-            columnVisibility: { restaurant_id: false },
+            columnVisibility: {
+              restaurant_id: false,
+              company_id: false,
+              company: user.role === "restaurant",
+              restaurant: user.role === "admin",
+            },
           }}
           muiToolbarAlertBannerProps={
             isError
@@ -289,21 +318,21 @@ function RecentInvoices() {
                 }
               : undefined
           }
-          // displayColumnDefOptions={{
-          //   "mrt-row-actions": {
-          //     header: "Action",
-          //   },
-          // }}
+          displayColumnDefOptions={{
+            "mrt-row-actions": {
+              header: "Action",
+            },
+          }}
           renderRowActions={({ row }) => (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              {/* <Tooltip arrow placement="left" title="Edit Details">
+              {/* <Tooltip cursor title="Edit Details">
                 <span>
                   <IconButton onClick={() => {}}>
                     <EditIcon />
                   </IconButton>
                 </span>
               </Tooltip> */}
-              <Tooltip arrow placement="left" title="Generate PDF">
+              <Tooltip cursor title="Generate PDF">
                 <span>
                   <IconButton
                     onClick={() => {
@@ -336,6 +365,7 @@ function RecentInvoices() {
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
           extraData={extraData}
+          user={user}
         />
       )}
       <Card>{invoiceData && <PdfInvoice invoiceData={invoiceData} />}</Card>

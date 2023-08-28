@@ -5,7 +5,7 @@ const Page = lazy(() => import("src/components/Page"));
 const PageTitleWrapper = lazy(() => import("src/components/PageTitleWrapper"));
 const PageHeader = lazy(() => import("./PageHeader"));
 const RecentMeals = lazy(() => import("./RecentMeals"));
-const RecentsIngredients = lazy(() => import("./RecentsIngredients"));
+const RecentsIngredients = lazy(() => import("./RecentIngredients"));
 
 function MealsAndIngredients() {
   const [option, setOption] = useState(1);

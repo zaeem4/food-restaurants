@@ -15,11 +15,11 @@ import {
   TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import RestaurantIcon from '@mui/icons-material/Restaurant';
+import RestaurantIcon from "@mui/icons-material/Restaurant";
 import MaterialReactTable from "material-react-table";
 import Swal from "sweetalert2";
 
-import { apiGet,apiPost } from "src/utils/axios";
+import { apiGet, apiPost } from "src/utils/axios";
 
 import AddNewMenusModal from "./AddNewMenusModal.js";
 import EditMenusModal from "./EditMenusModal.js";
@@ -70,12 +70,12 @@ function RecentMenus() {
 
   const placeOrder = async (row) => {
     const orderObject = {
-      'name':row.name,
-      'restaurant_id':row.restaurant_id,
-      'menus_id':row.id,
-      'status':'pending',
-      'company_id': user.role_id,
-      'employee_id':null
+      name: row.name,
+      restaurant_id: row.restaurant_id,
+      menus_id: row.id,
+      status: "pending",
+      company_id: user.role_id,
+      employee_id: null,
     };
     try {
       setIsLoading(true);
@@ -125,7 +125,7 @@ function RecentMenus() {
         header: "Name",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
         enableColumnFilter: false,
       },
       {
@@ -133,7 +133,7 @@ function RecentMenus() {
         header: "Description",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
         enableColumnFilter: false,
       },
       {
@@ -149,7 +149,7 @@ function RecentMenus() {
         header: "Meal ID",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
         enableColumnFilter: false,
       },
       {
@@ -165,7 +165,7 @@ function RecentMenus() {
         header: "Restaurant ID",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
         enableColumnFilter: false,
       },
       {
@@ -173,7 +173,7 @@ function RecentMenus() {
         header: "Days of Week",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
         enableColumnFilter: false,
       },
       {
@@ -270,7 +270,7 @@ function RecentMenus() {
         renderRowActions={({ row }) =>
           !["restaurant", "company"].includes(user.role) ? (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip arrow placement="left" title="Edit Details">
+              {/* <Tooltip cursor title="Edit Details">
                 <span>
                   <IconButton
                     onClick={(e) => {
@@ -281,11 +281,11 @@ function RecentMenus() {
                     <EditIcon />
                   </IconButton>
                 </span>
-              </Tooltip>
+              </Tooltip> */}
             </Box>
           ) : ["company"].includes(user.role) ? (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip arrow placement="left" title="Place Order">
+              <Tooltip cursor title="Place Order">
                 <span>
                   <IconButton
                     onClick={(e) => {
@@ -293,7 +293,7 @@ function RecentMenus() {
                       placeOrder(row.original);
                     }}
                   >
-                   <RestaurantIcon/>
+                    <RestaurantIcon />
                   </IconButton>
                 </span>
               </Tooltip>

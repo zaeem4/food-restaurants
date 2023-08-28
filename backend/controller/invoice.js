@@ -5,9 +5,11 @@ const Logger = require("../utils/logger");
 const get = async (req, res) => {
   try {
     const query = `
-      SELECT i.*, r.*, u.user_name, u.email, u.user_name as restaurant
+      SELECT i.*, r.*, u.user_name, u.email, u.user_name as restaurant, cu.user_name as company
       FROM invoices i
-      LEFT JOIN restaurants r on i.restaurant_id = r.id 
+      LEFT JOIN restaurants r on i.restaurant_id = r.id
+      LEFT JOIN companies c on i.company_id = c.id
+      LEFT JOIN users cu on c.user_id = cu.id 
       LEFT JOIN users u on r.user_id = u.id;
     `;
     const result = await Pool.query(query);
@@ -15,10 +17,14 @@ const get = async (req, res) => {
       const restaurants = await Pool.query(
         "select r.*, u.user_name from restaurants r LEFT JOIN users u on r.user_id = u.id;"
       );
+      const companies = await Pool.query(
+        "select c.*, u.user_name from companies c LEFT JOIN users u on c.user_id = u.id;"
+      );
       return res.json({
         success: true,
         invoices: result.rows,
         restaurants: restaurants.rows,
+        companies: companies.rows,
       });
     }
     return res.json({ success: false, error: "error in db" });
@@ -35,10 +41,16 @@ const create = async (req, res) => {
       file_location = null,
       start_date,
       end_date,
-      restaurant_id,
+      restaurant_id = null,
       company_id = null,
     } = req.body;
 
+    let andQuery = null;
+    if (company_id) {
+      andQuery = `AND o.restaurant_id = '${restaurant_id}' and o.company_id = '${company_id}'`;
+    } else {
+      andQuery = `AND o.restaurant_id = '${restaurant_id}'`;
+    }
     const query = `
       SELECT
         o.id, o.created_at, o.restaurant_id,
@@ -50,8 +62,8 @@ const create = async (req, res) => {
         LEFT JOIN menus mu ON om.menu_id = mu.id
         LEFT JOIN meals me ON mu.meal_id = me.id
         WHERE o.created_at >= '${start_date}' 
-        AND o.created_at <= '${end_date}'
-        AND o.restaurant_id = '${restaurant_id}'
+        AND o.created_at <= '${end_date}' 
+        ${andQuery}
         GROUP BY o.id;
     `;
 

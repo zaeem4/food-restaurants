@@ -271,6 +271,19 @@ function SidebarMenu({ user }) {
         </Button>
       </ListItem>
     ),
+    kitchens: (
+      <ListItem component="div" key="kitchens">
+        <Button
+          disableRipple
+          component={RouterLink}
+          onClick={closeSidebar}
+          to="/dashboard/kitchens"
+          startIcon={<PeopleIcon />}
+        >
+          Kitchens
+        </Button>
+      </ListItem>
+    ),
     reports: false,
   };
 
