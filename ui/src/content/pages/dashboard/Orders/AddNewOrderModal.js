@@ -27,18 +27,18 @@ const AddNewOrderModal = ({
   user,
   extraData,
 }) => {
+  console.log(user);
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        // if (
-        //   user.role === "restaurant" &&
-        //   column.accessorKey === "restaurant_id"
-        // ) {
-        //   acc[column.accessorKey] = user.role_id;
-        // } else
-        if (column.accessorKey === "menus_id") {
+        if (
+          user.role === "restaurant" &&
+          column.accessorKey === "restaurant_id"
+        ) {
+          acc[column.accessorKey] = user.role_id;
+        } else if (column.accessorKey === "menus_id") {
           acc[column.accessorKey] = [];
         } else {
           acc[column.accessorKey] = " ";

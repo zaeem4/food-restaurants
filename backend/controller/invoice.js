@@ -1,11 +1,15 @@
 const Pool = require("../config/db");
+const transport = require("../config/mailer");
 
 const Logger = require("../utils/logger");
+
+const pdf = require("pdf-creator-node");
+const fs = require("fs");
 
 const get = async (req, res) => {
   try {
     const query = `
-      SELECT i.*, r.*, u.user_name, u.email, u.user_name as restaurant, cu.user_name as company
+      SELECT i.*, u.user_name as restaurant, cu.user_name as company 
       FROM invoices i
       LEFT JOIN restaurants r on i.restaurant_id = r.id
       LEFT JOIN companies c on i.company_id = c.id
@@ -132,7 +136,127 @@ const create = async (req, res) => {
   }
 };
 
+const generateForAdmin = async (req, res) => {
+  try {
+    const query = `
+      SELECT i.*, r.*, u.*
+      FROM invoices i
+      LEFT JOIN restaurants r ON i.restaurant_id = r.id
+      LEFT JOIN users u ON r.user_id = u.id
+      WHERE i.id = '${req.body.invoiceData.id}';
+    `;
+    const result = await Pool.query(query);
+    if (result.rows.length > 0) {
+      const html = fs.readFileSync("public/admin-invoice.html", "utf8");
+
+      const document = {
+        html: html,
+        data: {
+          invoiceData: result.rows[0],
+        },
+        path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
+        // type: "",
+      };
+      const response = await pdf.create(document, {
+        format: "A4",
+        orientation: "portrait",
+        border: "10mm",
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: "/dev/null",
+          },
+        },
+      });
+      if (response.filename) {
+        const mailOptions = {
+          from: "zaeem1169@gmail.com",
+          to: "zaeem1169@gmail.com",
+          subject: "INVOICE | BY ADMIN",
+          html: "<b>Check your invoice now in attachment</b>",
+          attachments: [
+            {
+              filename: `inv-${req.body.invoiceData.id}.pdf`,
+              path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+              // cid: "uniq-mailtrap.png",
+            },
+          ],
+        };
+        const isSend = await transport.sendMail(mailOptions);
+        return res.json({
+          success: true,
+          filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+        });
+      }
+    }
+    return res.json({ success: false, error: "error in db" });
+  } catch (error) {
+    console.log(`400 invoice(generateForAdmin) | ${error}`);
+    return res.json({ success: false, error: error });
+  }
+};
+const generateForRestaurant = async (req, res) => {
+  try {
+    const query = `
+      SELECT i.*, r.*, u.*
+      FROM invoices i
+      LEFT JOIN restaurants r ON i.restaurant_id = r.id
+      LEFT JOIN users u ON r.user_id = u.id
+      WHERE i.id = '${req.body.invoiceData.id}';
+    `;
+    const result = await Pool.query(query);
+    if (result.rows.length > 0) {
+      const html = fs.readFileSync("public/admin-invoice.html", "utf8");
+
+      const document = {
+        html: html,
+        data: {
+          invoiceData: result.rows[0],
+        },
+        path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
+        // type: "",
+      };
+      const response = await pdf.create(document, {
+        format: "A4",
+        orientation: "portrait",
+        border: "10mm",
+        childProcessOptions: {
+          env: {
+            OPENSSL_CONF: "/dev/null",
+          },
+        },
+      });
+      if (response.filename) {
+        const mailOptions = {
+          from: "zaeem1169@gmail.com",
+          to: "zaeem1169@gmail.com",
+          subject: "INVOICE | BY Restaurant",
+          html: "<b>Check your invoice now in attachment</b>",
+          attachments: [
+            {
+              filename: `inv-${req.body.invoiceData.id}.pdf`,
+              path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+              // cid: "uniq-mailtrap.png",
+            },
+          ],
+        };
+        const isSend = await transport.sendMail(mailOptions);
+
+        return res.json({
+          success: true,
+          filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+        });
+      }
+    }
+    return res.json({ success: false, error: "error in db" });
+  } catch (error) {
+    console.log(`400 invoice(generateForRestaurant) | ${error}`);
+    return res.json({ success: false, error: error });
+  }
+};
+
 module.exports = {
   get,
   create,
+  generateForAdmin,
+  generateForRestaurant,
 };

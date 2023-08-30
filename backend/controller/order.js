@@ -6,14 +6,13 @@ const create = async (req, res) => {
   try {
     const { name, status, company_id, restaurant_id, employee_id, menus_id } =
       req.body;
-      
+
     let employee;
     if (!employee_id || employee_id === " ") {
       employee = null;
     } else {
       employee = employee_id;
     }
-
 
     const query = `
         INSERT INTO Orders (name, status, company_id, restaurant_id, employee_id)
@@ -70,7 +69,10 @@ const updateOrderStatus = async (req, res) => {
     const updated = await Pool.query(updateOrderStatusQuery);
     console.log(updated);
     if (updated?.rowCount) {
-      return res.json({ success: true, message: 'Status Has Been Changed Successfully' });
+      return res.json({
+        success: true,
+        message: "Status Has Been Changed Successfully",
+      });
     }
   } catch (e) {
     console.log(`400 || order(updateStatus).js | ${e}`);
@@ -126,7 +128,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
         restaurants: restaurants.rows,
         companies: companies.rows,
         employees: employees.rows,
-        status: ['pending',"ready-for-pickup", "in-kitchen", "delivered"],
+        status: ["pending", "ready-for-pickup", "in-kitchen", "delivered"],
       });
     }
     return res.json({ success: false, error: "error in db" });
@@ -139,5 +141,5 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
 module.exports = {
   create,
   getOrdersWithMenusAndIngredients,
-  updateOrderStatus
+  updateOrderStatus,
 };

@@ -14,15 +14,15 @@ import {
   Toolbar,
   TextField,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
-
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 
-import { apiGet } from "src/utils/axios";
+import Swal from "sweetalert2";
+import { apiGet, apiPost } from "src/utils/axios";
 
 import AddNewInvoiceModal from "./AddNewInvoiceModal";
-import PdfInvoice from "./PdfInvoice";
+// import PdfInvoice from "./PdfInvoice";
 
 function RecentInvoices() {
   const user = useSelector((state) => state.user.value);
@@ -38,7 +38,7 @@ function RecentInvoices() {
   const [isError, setIsError] = useState(false);
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [invoiceData, setInvoiceData] = useState(null);
+  // const [invoiceData, setInvoiceData] = useState(null);
 
   const fetchInvoices = async () => {
     try {
@@ -46,13 +46,16 @@ function RecentInvoices() {
 
       const response = await apiGet("/admin/invoices");
       if (response.success) {
-        if (user.role === "rider") {
+        if (user.role === "restaurant") {
           const invoices = response.invoices.filter(
             (invoice) => invoice.restaurant_id === user.role_id
           );
           setData(invoices);
         } else {
-          setData(response.invoices);
+          const invoices = response.invoices.filter(
+            (invoice) => invoice.company_id === null
+          );
+          setData(invoices);
         }
         setExtraData({
           restaurants: response.restaurants,
@@ -75,8 +78,37 @@ function RecentInvoices() {
     fetchInvoices();
   };
 
-  const handleGeneratePdf = (row) => {
-    setInvoiceData(row.original);
+  const handleGeneratePdf = async (row) => {
+    try {
+      setIsLoading(true);
+
+      const data = await apiPost(`/admin/generate-pdf-by-${user.role}`, {
+        invoiceData: row.original,
+      });
+
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Successfully generated and send to email address",
+          footer: `<a href="${data.filePath}" target="_blank">View Pdf</a>`,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+      }
+      setIsLoading(false);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setIsLoading(false);
+    }
+    // setInvoiceData(row.original);
   };
 
   useEffect(() => {
@@ -368,7 +400,6 @@ function RecentInvoices() {
           user={user}
         />
       )}
-      <Card>{invoiceData && <PdfInvoice invoiceData={invoiceData} />}</Card>
     </>
   );
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Invoice</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .invoice-header {
+        text-align: right;
+        margin-bottom: 10px;
+      }
+      .invoice-section {
+        margin: 10px 0;
+      }
+      .table th,
+      .table td {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="page">
+        <div class="invoice-header">
+          <h1>Invoice</h1>
+          <p>Racun# INV-{{invoiceData.id}}</p>
+          <p>Balance Due</p>
+          <p>EUR {{invoiceData.fee}}</p>
+        </div>
+        <div class="invoice-section">
+          <h4>Bill To:</h4>
+          <p class=" ">{{invoiceData.user_name}}</p>
+        </div>
+        <div class="invoice-section">
+          <p class="">{{invoiceData.owner}}</p>
+          <p class="">{{invoiceData.address}}</p>
+          <p class="">{{invoiceData.city}}</p>
+        </div>
+        <div class="invoice-section">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Type</th>
+                <th>Fee Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>{{invoiceData.fee_type}}</td>
+                <td>{{invoiceData.fee_value}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
