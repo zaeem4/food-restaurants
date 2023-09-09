@@ -81,38 +81,61 @@ const create = async (req, res) => {
         0
       );
 
-      let restaurant = await Pool.query(
-        `SELECT * from restaurants where id = '${restaurant_id}';`
-      );
+      if (!company_id) {
+        let restaurant = await Pool.query(
+          `SELECT * from restaurants where id = '${restaurant_id}';`
+        );
 
-      if (restaurant.rows.length > 0) {
-        let amount = 0;
-        let fee = 0;
-        restaurant = restaurant.rows[0];
+        if (restaurant.rows.length > 0) {
+          let amount = 0;
+          let fee = 0;
+          restaurant = restaurant.rows[0];
 
-        if (restaurant.fee_type == "fixed amount") {
-          amount = totalPricesSum;
-          fee = restaurant.fee_value;
-        } else if (restaurant.fee_type == "fixed percentage per order") {
-          amount = totalPricesSum;
-          fee = totalPricesSum * (restaurant.fee_value / 100);
-        } else if (restaurant.fee_type == "fixed amount per order") {
-          amount = totalPricesSum;
-          fee = ordersWithTotalPrices.length * restaurant.fee_value;
+          if (restaurant.fee_type == "fixed amount") {
+            amount = totalPricesSum;
+            fee = restaurant.fee_value;
+          } else if (restaurant.fee_type == "fixed percentage per order") {
+            amount = totalPricesSum;
+            fee = totalPricesSum * (restaurant.fee_value / 100);
+          } else if (restaurant.fee_type == "fixed amount per order") {
+            amount = totalPricesSum;
+            fee = ordersWithTotalPrices.length * restaurant.fee_value;
+          }
+
+          const query = `
+              INSERT INTO invoices (name, file_location, start_date, end_date, amount, fee, restaurant_id, company_id)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+              RETURNING id;
+          `;
+          const values = [
+            name,
+            file_location,
+            start_date.split("T")[0],
+            end_date.split("T")[0],
+            amount,
+            fee,
+            restaurant_id,
+            company_id,
+          ];
+          const result = await Pool.query(query, values);
+
+          if (result.rows.length > 0) {
+            return res.json({ success: true });
+          }
         }
-
+      } else {
         const query = `
-            INSERT INTO invoices (name, file_location, start_date, end_date, amount, fee, restaurant_id, company_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING id;
-        `;
+              INSERT INTO invoices (name, file_location, start_date, end_date, amount, fee, restaurant_id, company_id)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+              RETURNING id;
+          `;
         const values = [
           name,
           file_location,
           start_date.split("T")[0],
           end_date.split("T")[0],
-          amount,
-          fee,
+          totalPricesSum,
+          0,
           restaurant_id,
           company_id,
         ];
