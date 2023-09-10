@@ -191,11 +191,11 @@ const generateForAdmin = async (req, res) => {
           format: "A3",
           orientation: "landscape",
           border: "20mm",
-          // childProcessOptions: {
-          //   env: {
-          //     OPENSSL_CONF: "/etc/ssl",
-          //   },
-          // },
+          childProcessOptions: {
+            env: {
+              OPENSSL_CONF: "/dev/null",
+            },
+          },
         });
         if (response.filename) {
           const mailOptions = {
@@ -309,11 +309,11 @@ const generateForRestaurant = async (req, res) => {
           format: "A3",
           orientation: "landscape",
           border: "20mm",
-          // childProcessOptions: {
-          //   env: {
-          //     OPENSSL_CONF: "/etc/ssl",
-          //   },
-          // },
+          childProcessOptions: {
+            env: {
+              OPENSSL_CONF: "/dev/null",
+            },
+          },
         });
         if (response.filename) {
           const mailOptions = {
