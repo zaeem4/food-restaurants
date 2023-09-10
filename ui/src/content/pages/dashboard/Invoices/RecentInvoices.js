@@ -48,7 +48,8 @@ function RecentInvoices() {
       if (response.success) {
         if (user.role === "restaurant") {
           const invoices = response.invoices.filter(
-            (invoice) => invoice.restaurant_id === user.role_id
+            (invoice) =>
+              invoice.restaurant_id === user.role_id && invoice.company_id
           );
           setData(invoices);
         } else {
@@ -161,14 +162,14 @@ function RecentInvoices() {
         enableEditing: false,
         enableColumnFilter: false,
       },
-      // {
-      //   accessorKey: "amount",
-      //   header: "Total Amount",
-      //   size: 150,
-      //   createAble: false,
-      //   enableEditing: false,
-      //   enableColumnFilter: false,
-      // },
+      {
+        accessorKey: "amount",
+        header: "Total Amount",
+        size: 150,
+        createAble: false,
+        enableEditing: false,
+        enableColumnFilter: false,
+      },
       {
         accessorKey: "fee",
         header: "Fee",
@@ -340,6 +341,7 @@ function RecentInvoices() {
               company_id: false,
               company: user.role === "restaurant",
               restaurant: user.role === "admin",
+              fee: user.role === "admin",
             },
           }}
           muiToolbarAlertBannerProps={

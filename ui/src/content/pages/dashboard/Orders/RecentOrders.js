@@ -61,6 +61,11 @@ function RecentOrders() {
             (order) => order.restaurant_id === user.role_id
           );
           setData(orders);
+        } else if (user.role === "company") {
+          const orders = response.orders.filter(
+            (order) => order.company_id === user.role_id
+          );
+          setData(orders);
         } else if (user.role === "kitchen") {
           const orders = response.orders.filter(
             (order) =>
@@ -108,19 +113,11 @@ function RecentOrders() {
       user.role !== "rider"
         ? [
             {
-              accessorKey: "name",
-              header: "Name",
-              size: 150,
-              createAble: true,
-              enableEditing: true,
-              enableColumnFilter: false,
-            },
-            {
               accessorKey: "status",
               header: "Status",
               size: 150,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
               Cell: ({ cell, row }) => (
                 <Typography
@@ -159,8 +156,8 @@ function RecentOrders() {
               accessorKey: "company_id",
               header: "Company ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -175,8 +172,8 @@ function RecentOrders() {
               accessorKey: "restaurant_id",
               header: "Restaurant ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -191,8 +188,8 @@ function RecentOrders() {
               accessorKey: "employee_id",
               header: "Employee ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -285,8 +282,8 @@ function RecentOrders() {
               accessorKey: "company_id",
               header: "Company ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -301,8 +298,8 @@ function RecentOrders() {
               accessorKey: "restaurant_id",
               header: "Restaurant ID",
               size: 50,
-              createAble: true,
-              enableEditing: true,
+              createAble: false,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -378,7 +375,7 @@ function RecentOrders() {
           })}
         >
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-          {user.role === "restaurant" && (
+          {user.role === "company" && (
             <Box>
               <Button
                 variant="contained"
@@ -429,16 +426,16 @@ function RecentOrders() {
         renderRowActions={({ row }) =>
           !["company"].includes(user.role) && (
             <Box sx={{ display: "flex", gap: "1rem" }}>
-              <Tooltip title="Change Status">
+              <Tooltip cursor title="Change Status">
                 <span>
-                  <AutorenewIcon
+                  <IconButton
                     onClick={(e) => {
                       setCurrentRow(row.original);
                       setEditModalOpen(true);
                     }}
                   >
-                    <EditIcon />
-                  </AutorenewIcon>
+                    <AutorenewIcon />
+                  </IconButton>
                 </span>
               </Tooltip>
             </Box>

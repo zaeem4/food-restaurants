@@ -4,8 +4,15 @@ const Logger = require("../utils/logger");
 
 const create = async (req, res) => {
   try {
-    const { name, status, company_id, restaurant_id, employee_id, menus_id } =
+    const { status, company_id, restaurant_id, employee_id, menus_id } =
       req.body;
+
+    if (menus_id.length <= 0) {
+      return res.json({
+        success: false,
+        error: `Select menus also`,
+      });
+    }
 
     let employee;
     if (!employee_id || employee_id === " ") {
@@ -15,17 +22,11 @@ const create = async (req, res) => {
     }
 
     const query = `
-        INSERT INTO Orders (name, status, company_id, restaurant_id, employee_id)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO Orders (status, company_id, restaurant_id, employee_id)
+        VALUES ($1, $2, $3, $4)
         RETURNING id;
     `;
-    const values = [
-      name,
-      status.toLowerCase(),
-      company_id,
-      restaurant_id,
-      employee,
-    ];
+    const values = [status.toLowerCase(), company_id, restaurant_id, employee];
     const orderResult = await Pool.query(query, values);
 
     if (orderResult.rows.length > 0) {
@@ -56,7 +57,7 @@ const create = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || order(create).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -65,9 +66,9 @@ const updateOrderStatus = async (req, res) => {
     const newOrderStatus = req.body.status;
     const orderID = req.params.id;
 
-    let updateOrderStatusQuery = `UPDATE orders SET status = '${newOrderStatus}' WHERE id = '${orderID}'`;
+    const updateOrderStatusQuery = `UPDATE orders SET status = '${newOrderStatus}' WHERE id = '${orderID}'`;
     const updated = await Pool.query(updateOrderStatusQuery);
-    console.log(updated);
+
     if (updated?.rowCount) {
       return res.json({
         success: true,
@@ -76,7 +77,7 @@ const updateOrderStatus = async (req, res) => {
     }
   } catch (e) {
     console.log(`400 || order(updateStatus).js | ${e}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -86,7 +87,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
         SELECT
           o.company_id, o.restaurant_id, o.employee_id,
           o.id AS order_id, o.created_at, o.updated_at,
-          o.status, o.name,
+          o.status,
 
           ARRAY_AGG(DISTINCT om.menu_id) AS menus_id,
           ARRAY_AGG(DISTINCT i.name) AS ingredient_names,
@@ -134,7 +135,7 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || order(getOrdersWithMenusAndIngredients).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 

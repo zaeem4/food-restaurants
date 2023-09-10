@@ -13,7 +13,7 @@ const get = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 employee(get) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 const create = async (req, res) => {
@@ -33,7 +33,7 @@ const create = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 employee(create) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 

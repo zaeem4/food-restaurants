@@ -23,18 +23,27 @@ function generateRandomPassword() {
 const getAllCompaniesWithUsers = async (req, res) => {
   try {
     const query = `
-      SELECT c.*, u.*
+      SELECT c.*, u.*, ru.user_name as restaurant_user_name
       FROM companies c
-      JOIN users u ON c.user_id = u.id;
+      LEFT JOIN users u ON c.user_id = u.id
+      LEFT JOIN restaurants r on c.restaurant_owner = r.id
+      LEFT JOIN users ru on r.user_id = ru.id
     `;
     const result = await Pool.query(query);
     if (result.rows) {
-      return res.json({ success: true, companies: result.rows });
+      const restaurants = await Pool.query(
+        "select r.*, u.user_name from restaurants r LEFT JOIN users u on r.user_id = u.id;"
+      );
+      return res.json({
+        success: true,
+        companies: result.rows,
+        restaurants: restaurants.rows,
+      });
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 company(get) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -49,6 +58,7 @@ const create = async (req, res) => {
       phone,
       owner,
       shifts,
+      restaurant_owner,
     } = req.body;
 
     const randomPassword = generateRandomPassword();
@@ -61,8 +71,8 @@ const create = async (req, res) => {
 
     if (user.rows.length > 0) {
       const query = `
-        INSERT INTO companies (user_id, address, city, tax_number, phone, owner, shifts)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO companies (user_id, address, city, tax_number, phone, owner, shifts,restaurant_owner)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id;
     `;
       const values = [
@@ -73,6 +83,7 @@ const create = async (req, res) => {
         phone,
         owner,
         shifts,
+        restaurant_owner,
       ];
       const result = await Pool.query(query, values);
 
@@ -83,7 +94,7 @@ const create = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 company(create) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 

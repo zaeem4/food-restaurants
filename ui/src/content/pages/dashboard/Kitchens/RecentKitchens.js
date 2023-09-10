@@ -161,13 +161,13 @@ function RecentKitchens() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip cursor title="Edit Details">
+            {/* <Tooltip cursor title="Edit Details">
               <span>
                 <IconButton onClick={() => {}}>
                   <EditIcon />
                 </IconButton>
               </span>
-            </Tooltip>
+            </Tooltip> */}
           </Box>
         )}
         globalFilterModeOptions={["fuzzy", "startsWith"]}

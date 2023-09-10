@@ -1,19 +1,19 @@
 CREATE TABLE users (
   "id" bigserial PRIMARY KEY,
-  "user_name" varchar UNIQUE NOT NULL,
-  "email" varchar UNIQUE NOT NULL,
+  "user_name" VARCHAR(255) NOT NULL,
+  "email" VARCHAR(255) UNIQUE NOT NULL,
   "password" varchar,
-  "role" varchar default(NULL),
-  "updated_at" timestamp,
-  "created_at" timestamp
+  "role" VARCHAR(255) default(NULL),
+  "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP,
+  "created_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE permissions (
   "id" bigserial PRIMARY KEY,
-  "role"  varchar UNIQUE NOT NULL,
+  "role"  VARCHAR(255) UNIQUE NOT NULL,
   "scope" json NOT NULL,
-  "updated_at" timestamp,
-  "created_at" timestamp
+  "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP,
+  "created_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -101,7 +101,7 @@ CREATE TABLE orders (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ordersmenus (
+CREATE TABLE OrdersMenus (
   order_id bigint REFERENCES Orders(id),
   menu_id bigint REFERENCES menus(id),
   PRIMARY KEY (order_id, menu_id)
@@ -130,14 +130,30 @@ CREATE TABLE kitchens (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (1,'test1','admin1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','admin','2023-07-31 15:06:54','2023-07-31 15:06:54');
-INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (3,'restaurant1','restaurant1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','restaurant','2023-08-01 16:24:35','2023-08-01 16:24:35');
-INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (7,'company1','company1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','company','2023-08-05 21:58:07','2023-08-05 21:58:07');
-INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (8,'rider1','rider1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','rider','2023-08-05 21:58:07','2023-08-05 21:58:07');
-INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (14,'kitchen1','kitchen1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','kitchen','2023-08-28 20:50:46','2023-08-28 20:50:46');
+alter table companies
+add column restaurant_owner bigint REFERENCES restaurants(id);
 
-INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (1,'admin','{"dashboard":true,"restaurants":true,"meals":true,"invoices":true,"companies":true,"menus":true,"orders":false,"employees":false,"reports":false, "kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
-INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (2,'restaurant','{"dashboard":false,"restaurants":false,"meals":false,"invoices":true,"companies":true,"menus":true,"orders":true,"employees":false,"reports":false,"kitchens":true}','2023-07-31 15:55:20','2023-07-31 15:55:20');
-INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (3,'company','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":true,"orders":true,"employees":true,"reports":true,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
-INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (5,'rider','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":false,"orders":true,"employees":false,"reports":false,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
-INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (6,'kitchen','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":false,"orders":true,"employees":false,"reports":false,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+alter table orders
+drop column name;
+
+CREATE TABLE menusdates (
+  menu_id bigint REFERENCES menus(id),
+  day int not null,
+  PRIMARY KEY (menu_id, day)
+);
+
+
+alter table menus
+drop column day;
+
+INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT,'test1','admin1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','admin','2023-07-31 15:06:54','2023-07-31 15:06:54');
+INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT'restaurant1','restaurant1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','restaurant','2023-08-01 16:24:35','2023-08-01 16:24:35');
+INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT,'company1','company1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','company','2023-08-05 21:58:07','2023-08-05 21:58:07');
+INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT,'rider1','rider1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','rider','2023-08-05 21:58:07','2023-08-05 21:58:07');
+INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT,'kitchen1','kitchen1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','kitchen','2023-08-28 20:50:46','2023-08-28 20:50:46');
+
+INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT,'admin','{"dashboard":true,"restaurants":true,"meals":true,"invoices":true,"companies":true,"menus":true,"orders":false,"employees":false,"reports":false, "kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT,'restaurant','{"dashboard":false,"restaurants":false,"meals":false,"invoices":true,"companies":true,"menus":true,"orders":true,"employees":false,"reports":false,"kitchens":true}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT'company','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":true,"orders":true,"employees":true,"reports":true,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT,'rider','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":false,"orders":true,"employees":false,"reports":false,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT,'kitchen','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":false,"orders":true,"employees":false,"reports":false,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');

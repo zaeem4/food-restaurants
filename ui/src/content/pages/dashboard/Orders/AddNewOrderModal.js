@@ -33,12 +33,13 @@ const AddNewOrderModal = ({
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        if (
-          user.role === "restaurant" &&
-          column.accessorKey === "restaurant_id"
-        ) {
-          acc[column.accessorKey] = user.role_id;
-        } else if (column.accessorKey === "menus_id") {
+        // if (
+        //   user.role === "restaurant" &&
+        //   column.accessorKey === "restaurant_id"
+        // ) {
+        //   acc[column.accessorKey] = user.role_id;
+        // } else
+        if (column.accessorKey === "menus_id") {
           acc[column.accessorKey] = [];
         } else {
           acc[column.accessorKey] = " ";
@@ -52,7 +53,13 @@ const AddNewOrderModal = ({
     e.preventDefault();
     try {
       setSpinner(true);
-      const data = await apiPost(`/admin/orders/create`, values);
+      const data = await apiPost(`/admin/orders/create`, {
+        ...values,
+        status: "pending",
+        company_id: user.role_id,
+        restaurant_id: user.restaurant_owner,
+        employee_id: null,
+      });
 
       if (data.success) {
         onSubmit(values);

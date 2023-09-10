@@ -1,6 +1,6 @@
 const Pool = require("../config/db");
 const transport = require("../config/mailer");
-
+let ejs = require("ejs");
 const Logger = require("../utils/logger");
 
 const pdf = require("pdf-creator-node");
@@ -34,7 +34,7 @@ const get = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 invoice(get) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -59,14 +59,14 @@ const create = async (req, res) => {
       SELECT
         o.id, o.created_at, o.restaurant_id,
         ARRAY_AGG(DISTINCT om.menu_id) AS menus_id,
-        ARRAY_AGG(DISTINCT me.price) AS prices,
+        ARRAY_AGG(me.price) AS prices,
         SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
         FROM Orders o
         LEFT JOIN OrdersMenus om ON o.id = om.order_id
         LEFT JOIN menus mu ON om.menu_id = mu.id
         LEFT JOIN meals me ON mu.meal_id = me.id
-        WHERE o.created_at >= '${start_date}' 
-        AND o.created_at <= '${end_date}' 
+        WHERE o.created_at >= '${start_date.split("T")[0]}' 
+        AND o.created_at <= '${end_date.split("T")[0]}' 
         ${andQuery}
         GROUP BY o.id;
     `;
@@ -155,7 +155,7 @@ const create = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 invoice(create) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -172,6 +172,10 @@ const generateForAdmin = async (req, res) => {
     if (result.rows.length > 0) {
       const html = fs.readFileSync("public/admin-invoice.html", "utf8");
 
+      result.rows[0]["created_at"] = new Date(
+        result.rows[0]["created_at"]
+      ).toLocaleDateString();
+
       const document = {
         html: html,
         data: {
@@ -183,7 +187,7 @@ const generateForAdmin = async (req, res) => {
       const response = await pdf.create(document, {
         format: "A4",
         orientation: "portrait",
-        border: "10mm",
+        margin: "1cm",
         childProcessOptions: {
           env: {
             OPENSSL_CONF: "/dev/null",
@@ -214,26 +218,62 @@ const generateForAdmin = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 invoice(generateForAdmin) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 const generateForRestaurant = async (req, res) => {
   try {
     const query = `
-      SELECT i.*, r.*, u.*
+      SELECT i.*, r.address as r_address,r.city as r_city, r.tax_number as r_tax_number, r.phone as r_phone,r.owner as r_owner,
+      c.address as c_address,c.city as c_city, c.tax_number as c_tax_number, c.phone as c_phone,c.owner as c_owner, 
+      u.user_name as r_user_name,u.email as r_email, cu.user_name as c_user_name, cu.email as c_email
       FROM invoices i
       LEFT JOIN restaurants r ON i.restaurant_id = r.id
+      LEFT JOIN companies c ON i.company_id = c.id
       LEFT JOIN users u ON r.user_id = u.id
+      LEFT JOIN users cu ON c.user_id = cu.id
       WHERE i.id = '${req.body.invoiceData.id}';
     `;
     const result = await Pool.query(query);
+
     if (result.rows.length > 0) {
-      const html = fs.readFileSync("public/admin-invoice.html", "utf8");
+      const query = `
+        SELECT o.id, 
+        ARRAY_AGG(DISTINCT mu.name) AS menus_name,
+        ARRAY_AGG(me.price) AS prices,
+        SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
+        FROM Orders o
+        LEFT JOIN OrdersMenus om ON o.id = om.order_id
+        LEFT JOIN menus mu ON om.menu_id = mu.id
+        LEFT JOIN meals me ON mu.meal_id = me.id
+        WHERE o.created_at >= '${result.rows[0].start_date
+          .toLocaleDateString()
+          .replaceAll("/", "-")}' 
+        AND o.created_at <= '${result.rows[0].end_date
+          .toLocaleDateString()
+          .replaceAll("/", "-")}'
+        AND o.restaurant_id = '${result.rows[0].restaurant_id}'
+        AND o.company_id = '${result.rows[0].company_id}'
+        GROUP BY o.id;
+      `;
+
+      const invoiceMenus = await Pool.query(query);
+
+      result.rows[0]["created_at"] = new Date(
+        result.rows[0]["created_at"]
+      ).toLocaleDateString();
+
+      const template = fs.readFileSync(
+        "public/restaurant-invoice.html",
+        "utf8"
+      );
+      const html = ejs.render(template, { name: "test" });
 
       const document = {
         html: html,
         data: {
           invoiceData: result.rows[0],
+          invoiceMenus: invoiceMenus.rows,
         },
         path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
         // type: "",
@@ -273,7 +313,7 @@ const generateForRestaurant = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 invoice(generateForRestaurant) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 

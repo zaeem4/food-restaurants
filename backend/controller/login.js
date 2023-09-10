@@ -46,6 +46,7 @@ const verify = async (req, res) => {
           );
           role = role.rows[0];
           userDetails["role_id"] = role.id;
+          userDetails["restaurant_owner"] = role.restaurant_owner;
         } else if (userDetails.role === "kitchen") {
           let role = await Pool.query(
             `select * from kitchens where user_id = '${userDetails.id}';`
@@ -72,7 +73,7 @@ const verify = async (req, res) => {
     return res.json({ success: false, error: "email or password invalid" });
   } catch (error) {
     console.log(`400 login(verify) | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 

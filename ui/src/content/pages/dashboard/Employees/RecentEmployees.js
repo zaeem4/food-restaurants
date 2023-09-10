@@ -1,7 +1,7 @@
 import { useMemo, useEffect, useState, useRef } from "react";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
-
+import { useSelector } from "react-redux";
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
@@ -12,6 +12,7 @@ import EditEmployeeModal from "./EditEmployeeModal.js";
 import { apiGet } from "src/utils/axios";
 
 function RecentEmployees() {
+  const user = useSelector((state) => state.user.value);
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
@@ -28,7 +29,14 @@ function RecentEmployees() {
 
       const response = await apiGet("/admin/employees");
       if (response.success) {
-        setData(response.employees);
+        if (user.role === "company") {
+          const employees = response.employees.filter(
+            (employe) => employe.company_id === user.role_id
+          );
+          setData(employees);
+        } else {
+          setData(response.employees);
+        }
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -150,7 +158,7 @@ function RecentEmployees() {
         }}
         renderRowActions={({ row }) => (
           <Box sx={{ display: "flex", gap: "1rem" }}>
-            <Tooltip cursor title="Edit Details">
+            {/* <Tooltip cursor title="Edit Details">
               <span>
                 <IconButton
                   onClick={(e) => {
@@ -161,7 +169,7 @@ function RecentEmployees() {
                   <EditIcon />
                 </IconButton>
               </span>
-            </Tooltip>
+            </Tooltip> */}
           </Box>
         )}
         globalFilterModeOptions={["fuzzy", "startsWith"]}

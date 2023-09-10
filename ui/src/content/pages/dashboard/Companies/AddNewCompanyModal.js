@@ -9,19 +9,37 @@ import {
   Stack,
   TextField,
   Box,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewCompanyModal = ({
+  open,
+  columns,
+  onClose,
+  onSubmit,
+  user,
+  extraData,
+}) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        acc[column.accessorKey] = " ";
+        if (
+          user.role === "restaurant" &&
+          column.accessorKey === "restaurant_owner"
+        ) {
+          acc[column.accessorKey] = user.role_id;
+        } else {
+          acc[column.accessorKey] = " ";
+        }
       }
       return acc;
     }, {})
@@ -85,7 +103,40 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
           >
             {columns.map(
               (column) =>
-                column.createAble && (
+                column.createAble &&
+                (column.accessorKey === "restaurant_owner" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Restaurants
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={
+                        user.role === "restaurant"
+                          ? user.role_id
+                          : values[column.accessorKey]
+                      }
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Restaurants"
+                      inputProps={{ readOnly: user.role === "restaurant" }}
+                    >
+                      {extraData.restaurants.map((restaurant) => (
+                        <MenuItem key={restaurant.id} value={restaurant.id}>
+                          {restaurant.user_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : (
                   <TextField
                     required
                     error={!values[column.accessorKey]}
@@ -97,7 +148,7 @@ const AddNewCompanyModal = ({ open, columns, onClose, onSubmit }) => {
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
                   />
-                )
+                ))
             )}
           </Stack>
           <br />

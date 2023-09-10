@@ -64,7 +64,7 @@ const create = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || restaurants(create).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -90,7 +90,7 @@ const getAllRestaurantsWithUsers = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || restaurant(getAllRestaurantsWithUsers).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 module.exports = {

@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Invoice</title>
+    <meta charset="utf-8">
     <!-- Include Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -26,21 +27,17 @@
             <h1>Invoice</h1>
             <p>Racun# INV-{{invoiceData.id}}</p>
             <p style="font-weight: bold">Balance Due</p>
-            <p style="font-weight: bold">EUR {{invoiceData.fee}}</p>
+            <p style="font-weight: bold">EUR {{invoiceData.amount}}</p>
           </div>
         </div>
       </div>
 
-      <!-- <div class="invoice-section">
-        <h6>TOPLI OBROK D.O.O.</h6>
-        <p>Adresa</p>
-        79101 Prijedor <br />
-        Tax ID : 400714660007 <br />
-        Nova Banka 555-10000111976-48 <br />
-        +387 66 663.666
-        <br />
-        info@test.com
-      </div> -->
+      <div class="invoice-section">
+        <p style="font-weight: bold">{{invoiceData.r_user_name}}</p>
+            {{invoiceData.r_owner}} <br />
+            {{invoiceData.r_address}}<br />
+            {{invoiceData.r_city}}
+      </div>
 
       <div class="row">
         <div class="col-lg-4">
@@ -48,11 +45,10 @@
             <h6>Bill To:</h6>
           </div>
           <div>
-            <p style="font-weight: bold">{{invoiceData.user_name}}</p>
-            <!-- {{invoiceData.user_name}} <br /> -->
-            {{invoiceData.owner}} <br />
-            {{invoiceData.address}}<br />
-            {{invoiceData.city}}
+            <p style="font-weight: bold">{{invoiceData.c_user_name}}</p>
+            {{invoiceData.c_owner}} <br />
+            {{invoiceData.c_address}}<br />
+            {{invoiceData.c_city}}
           </div>
         </div>
         <div class="col-lg-4"></div>
@@ -78,21 +74,19 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>#</th>
-              <!-- <th>Items & Description</th>
-              <th>QTY</th> -->
-              <th>Fee Type</th>
+              <th>Menu Id</th>
+              <th>Items & Description</th>
               <th>Amount</th>
             </tr>
           </thead>
           <tbody>
+            {{#each invoiceMenus}}
             <tr>
-              <td>1</td>
-              <td>{{invoiceData.fee_type}}</td>
-              <td>{{invoiceData.fee_value}}</td>
-              <!-- <td></td>
-              <td></td> -->
+              <td>{{this.id}}</td>
+              <td>{{this.menus_name}}</td>
+              <td>{{this.total_prices}}</td>
             </tr>
+            {{/each}}
           </tbody>
         </table>
       </div>
@@ -102,12 +96,12 @@
         <div class="col-lg-4">
           <p>
             <span style="font-weight: bold">Sub Total</span>
-            <span style="margin-left: 20px">{{invoiceData.fee_value}}</span>
+            <span style="margin-left: 20px">{{invoiceData.amount}}</span>
           </p>
           <p>
             <span style="font-weight: bold">Total</span>
             <span style="margin-left: 20px; font-weight: bold"
-              >{{invoiceData.fee_value}}</span
+              >{{invoiceData.amount}}</span
             >
           </p>
           <!-- <p class="total-balance">

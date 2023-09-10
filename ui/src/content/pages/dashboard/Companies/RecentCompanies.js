@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useState, useRef } from "react";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
+import { useSelector } from "react-redux";
 // import { useNavigate } from 'react-router-dom';
 
 import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
@@ -12,9 +13,13 @@ import EditCompanyModal from "./EditCompanyModal.js";
 import { apiGet } from "src/utils/axios";
 
 function RecentCompanies() {
+  const user = useSelector((state) => state.user.value);
   const tableInstanceRef = useRef(null);
 
   const [data, setData] = useState([]);
+  const [extraData, setExtraData] = useState({
+    restaurants: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -28,7 +33,17 @@ function RecentCompanies() {
 
       const response = await apiGet("/admin/companies");
       if (response.success) {
-        setData(response.companies);
+        if (user.role === "restaurant") {
+          const companies = response.companies.filter(
+            (company) => company.restaurant_owner === user.role_id
+          );
+          setData(companies);
+        } else {
+          setData(response.companies);
+        }
+        setExtraData({
+          restaurants: response.restaurants,
+        });
       } else {
         setIsError(true);
         setIsLoading(false);
@@ -59,6 +74,20 @@ function RecentCompanies() {
       {
         accessorKey: "user_name",
         header: "Name",
+        size: 150,
+        createAble: true,
+        enableEditing: true,
+      },
+      {
+        accessorKey: "restaurant_user_name",
+        header: "Restaurant",
+        size: 150,
+        createAble: false,
+        enableEditing: false,
+      },
+      {
+        accessorKey: "restaurant_owner",
+        header: "Restaurant",
         size: 150,
         createAble: true,
         enableEditing: true,
@@ -176,6 +205,9 @@ function RecentCompanies() {
         // positionActionsColumn={"last"}
         initialState={{
           showGlobalFilter: true,
+          columnVisibility: {
+            restaurant_owner: false,
+          },
         }}
         muiToolbarAlertBannerProps={
           isError
@@ -224,6 +256,8 @@ function RecentCompanies() {
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          user={user}
+          extraData={extraData}
         />
       )}
 

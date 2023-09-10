@@ -70,7 +70,6 @@ function RecentMenus() {
 
   const placeOrder = async (row) => {
     const orderObject = {
-      name: row.name,
       restaurant_id: row.restaurant_id,
       menus_id: row.id,
       status: "pending",
@@ -170,11 +169,14 @@ function RecentMenus() {
       },
       {
         accessorKey: "day",
-        header: "Days of Week",
+        header: "Days of Month",
         size: 150,
         createAble: true,
         enableEditing: false,
         enableColumnFilter: false,
+        Cell: ({ cell }) => (
+          <Box component="span">{cell.getValue()?.toLocaleString()}</Box>
+        ),
       },
       {
         accessorFn: (row) => new Date(row.created_at),
@@ -283,13 +285,14 @@ function RecentMenus() {
                 </span>
               </Tooltip> */}
             </Box>
-          ) : ["company"].includes(user.role) ? (
+          ) : ["company"].includes(user.role) &&
+            row.original.day.includes(new Date().getDate()) ? (
             <Box sx={{ display: "flex", gap: "1rem" }}>
               <Tooltip cursor title="Place Order">
                 <span>
                   <IconButton
                     onClick={(e) => {
-                      setCurrentRow(row.original);
+                      // setCurrentRow(row.original);
                       placeOrder(row.original);
                     }}
                   >

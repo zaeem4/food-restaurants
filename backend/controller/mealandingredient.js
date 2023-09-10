@@ -13,6 +13,13 @@ const insertMeal = async (req, res) => {
       ingredients,
     } = req.body;
 
+    if (ingredients.length <= 0) {
+      return res.json({
+        success: false,
+        error: `Select ingredients also`,
+      });
+    }
+
     const query = `
         INSERT INTO meals (name, description, price, photo_location, restaurant_id)
         VALUES ($1, $2, $3, $4, $5)
@@ -41,7 +48,7 @@ const insertMeal = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || mealsandingredients(insertMeal).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -64,7 +71,7 @@ async function insertIngredient(req, res) {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || mealsandingredients(insertIngredient).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 }
 
@@ -97,7 +104,7 @@ const getMealsWithIngredients = async (req, res) => {
     console.log(
       `400 || mealsandingredients(getMealsWithIngredients).js | ${error}`
     );
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -124,7 +131,7 @@ const getIngredientsWithMeals = async (req, res) => {
     console.log(
       `400 || mealsandingredients(getIngredientsWithMeals).js | ${error}`
     );
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 

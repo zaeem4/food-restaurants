@@ -25,7 +25,11 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        acc[column.accessorKey] = " ";
+        if (column.accessorKey === "day") {
+          acc[column.accessorKey] = [];
+        } else {
+          acc[column.accessorKey] = " ";
+        }
       }
       return acc;
     }, {})
@@ -155,6 +159,7 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
                       labelId={`${column.accessorKey}-label`}
                       name={column.accessorKey}
                       value={values[column.accessorKey]}
+                      multiple
                       onChange={(e) =>
                         setValues({
                           ...values,

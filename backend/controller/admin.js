@@ -23,7 +23,7 @@ const register = async (req, res) => {
     return res.json({ success: false });
   } catch (error) {
     console.log(`400 || admin(register).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -53,7 +53,7 @@ const role = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || admin(register).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
@@ -74,7 +74,7 @@ const getTotalCounts = async (req, res) => {
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
     console.log(`400 || admin(getTotalCounts).js | ${error}`);
-    return res.json({ success: false, error: error });
+    return res.json({ success: false, error: error.message });
   }
 };
 
