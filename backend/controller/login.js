@@ -77,6 +77,25 @@ const verify = async (req, res) => {
   }
 };
 
+const verifyEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    let userDetails = await Pool.query(
+      `select * from users where email = '${email}';`
+    );
+    if (userDetails.rows.length > 0) {
+      const pin = Math.floor(1000 + Math.random() * 9000);
+      
+      return res.json({ success: true });
+    }
+    return res.json({ success: false, error: "email invalid" });
+  } catch (error) {
+    console.log(`400 login(verify) | ${error}`);
+    return res.json({ success: false, error: error.message });
+  }
+};
+
 module.exports = {
   verify,
+  verifyEmail,
 };

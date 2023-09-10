@@ -1,15 +1,16 @@
 const Pool = require("../config/db");
 const transport = require("../config/mailer");
-let ejs = require("ejs");
 const Logger = require("../utils/logger");
 
 const pdf = require("pdf-creator-node");
 const fs = require("fs");
+const ejs = require("ejs");
 
 const get = async (req, res) => {
   try {
     const query = `
-      SELECT i.*, u.user_name as restaurant, cu.user_name as company 
+      SELECT i.*, u.user_name as restaurant, u.email as restaurant_email, 
+      cu.user_name as company, cu.email as company_email
       FROM invoices i
       LEFT JOIN restaurants r on i.restaurant_id = r.id
       LEFT JOIN companies c on i.company_id = c.id
@@ -161,59 +162,84 @@ const create = async (req, res) => {
 
 const generateForAdmin = async (req, res) => {
   try {
-    const query = `
-      SELECT i.*, r.*, u.*
-      FROM invoices i
-      LEFT JOIN restaurants r ON i.restaurant_id = r.id
-      LEFT JOIN users u ON r.user_id = u.id
-      WHERE i.id = '${req.body.invoiceData.id}';
-    `;
-    const result = await Pool.query(query);
-    if (result.rows.length > 0) {
-      const html = fs.readFileSync("public/admin-invoice.html", "utf8");
+    if (!req.body.invoiceData.file_location) {
+      const query = `
+        SELECT i.*, r.*, u.*
+        FROM invoices i
+        LEFT JOIN restaurants r ON i.restaurant_id = r.id
+        LEFT JOIN users u ON r.user_id = u.id
+        WHERE i.id = '${req.body.invoiceData.id}';
+      `;
+      const result = await Pool.query(query);
+      if (result.rows.length > 0) {
+        const template = fs.readFileSync("public/admin-invoice.html", "utf8");
+        const html = ejs.render(template);
 
-      result.rows[0]["created_at"] = new Date(
-        result.rows[0]["created_at"]
-      ).toLocaleDateString();
+        result.rows[0]["created_at"] = new Date(
+          result.rows[0]["created_at"]
+        ).toLocaleDateString();
 
-      const document = {
-        html: html,
-        data: {
-          invoiceData: result.rows[0],
-        },
-        path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
-        // type: "",
-      };
-      const response = await pdf.create(document, {
-        format: "A4",
-        orientation: "portrait",
-        margin: "1cm",
-        childProcessOptions: {
-          env: {
-            OPENSSL_CONF: "/dev/null",
+        let document = {
+          html: html,
+          data: {
+            invoiceData: result.rows[0],
           },
-        },
-      });
-      if (response.filename) {
-        const mailOptions = {
-          from: "zaeem1169@gmail.com",
-          to: "zaeem1169@gmail.com",
-          subject: "INVOICE | BY ADMIN",
-          html: "<b>Check your invoice now in attachment</b>",
-          attachments: [
-            {
-              filename: `inv-${req.body.invoiceData.id}.pdf`,
-              path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
-              // cid: "uniq-mailtrap.png",
-            },
-          ],
+          path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
+          // type: "file",
         };
-        const isSend = await transport.sendMail(mailOptions);
-        return res.json({
-          success: true,
-          filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+        const response = await pdf.create(document, {
+          format: "A3",
+          orientation: "landscape",
+          border: "20mm",
+          // childProcessOptions: {
+          //   env: {
+          //     OPENSSL_CONF: "/etc/ssl",
+          //   },
+          // },
         });
+        if (response.filename) {
+          const mailOptions = {
+            from: process.env.EMAIL,
+            to: req.body.invoiceData.restaurant_email,
+            subject: "INVOICE | BY ADMIN",
+            html: "<b>Check your invoice now in attachment</b>",
+            attachments: [
+              {
+                filename: `inv-${req.body.invoiceData.id}.pdf`,
+                path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+                // cid: "uniq-mailtrap.png",
+              },
+            ],
+          };
+          const isSend = await transport.sendMail(mailOptions);
+          const isUpdated = await Pool.query(
+            `UPDATE invoices set file_location = '${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf' where id = '${req.body.invoiceData.id}'`
+          );
+          return res.json({
+            success: true,
+            filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+          });
+        }
       }
+    } else {
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: req.body.invoiceData.restaurant_email,
+        subject: "INVOICE | BY ADMIN",
+        html: "<b>Check your invoice now in attachment</b>",
+        attachments: [
+          {
+            filename: `inv-${req.body.invoiceData.id}.pdf`,
+            path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+            // cid: "uniq-mailtrap.png",
+          },
+        ],
+      };
+      const isSend = await transport.sendMail(mailOptions);
+      return res.json({
+        success: true,
+        filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+      });
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {
@@ -223,92 +249,115 @@ const generateForAdmin = async (req, res) => {
 };
 const generateForRestaurant = async (req, res) => {
   try {
-    const query = `
-      SELECT i.*, r.address as r_address,r.city as r_city, r.tax_number as r_tax_number, r.phone as r_phone,r.owner as r_owner,
-      c.address as c_address,c.city as c_city, c.tax_number as c_tax_number, c.phone as c_phone,c.owner as c_owner, 
-      u.user_name as r_user_name,u.email as r_email, cu.user_name as c_user_name, cu.email as c_email
-      FROM invoices i
-      LEFT JOIN restaurants r ON i.restaurant_id = r.id
-      LEFT JOIN companies c ON i.company_id = c.id
-      LEFT JOIN users u ON r.user_id = u.id
-      LEFT JOIN users cu ON c.user_id = cu.id
-      WHERE i.id = '${req.body.invoiceData.id}';
-    `;
-    const result = await Pool.query(query);
-
-    if (result.rows.length > 0) {
+    if (!req.body.invoiceData.file_location) {
       const query = `
-        SELECT o.id, 
-        ARRAY_AGG(DISTINCT mu.name) AS menus_name,
-        ARRAY_AGG(me.price) AS prices,
-        SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
-        FROM Orders o
-        LEFT JOIN OrdersMenus om ON o.id = om.order_id
-        LEFT JOIN menus mu ON om.menu_id = mu.id
-        LEFT JOIN meals me ON mu.meal_id = me.id
-        WHERE o.created_at >= '${result.rows[0].start_date
-          .toLocaleDateString()
-          .replaceAll("/", "-")}' 
-        AND o.created_at <= '${result.rows[0].end_date
-          .toLocaleDateString()
-          .replaceAll("/", "-")}'
-        AND o.restaurant_id = '${result.rows[0].restaurant_id}'
-        AND o.company_id = '${result.rows[0].company_id}'
-        GROUP BY o.id;
+        SELECT i.*, r.address as r_address,r.city as r_city, r.tax_number as r_tax_number, r.phone as r_phone,r.owner as r_owner,
+        c.address as c_address,c.city as c_city, c.tax_number as c_tax_number, c.phone as c_phone,c.owner as c_owner, 
+        u.user_name as r_user_name,u.email as r_email, cu.user_name as c_user_name, cu.email as c_email
+        FROM invoices i
+        LEFT JOIN restaurants r ON i.restaurant_id = r.id
+        LEFT JOIN companies c ON i.company_id = c.id
+        LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN users cu ON c.user_id = cu.id
+        WHERE i.id = '${req.body.invoiceData.id}';
       `;
+      const result = await Pool.query(query);
 
-      const invoiceMenus = await Pool.query(query);
+      if (result.rows.length > 0) {
+        const query = `
+          SELECT o.id, 
+          ARRAY_AGG(DISTINCT mu.name) AS menus_name,
+          ARRAY_AGG(me.price) AS prices,
+          SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
+          FROM Orders o
+          LEFT JOIN OrdersMenus om ON o.id = om.order_id
+          LEFT JOIN menus mu ON om.menu_id = mu.id
+          LEFT JOIN meals me ON mu.meal_id = me.id
+          WHERE o.created_at >= '${result.rows[0].start_date
+            .toLocaleDateString()
+            .replaceAll("/", "-")}' 
+          AND o.created_at <= '${result.rows[0].end_date
+            .toLocaleDateString()
+            .replaceAll("/", "-")}'
+          AND o.restaurant_id = '${result.rows[0].restaurant_id}'
+          AND o.company_id = '${result.rows[0].company_id}'
+          GROUP BY o.id;
+        `;
 
-      result.rows[0]["created_at"] = new Date(
-        result.rows[0]["created_at"]
-      ).toLocaleDateString();
+        const invoiceMenus = await Pool.query(query);
 
-      const template = fs.readFileSync(
-        "public/restaurant-invoice.html",
-        "utf8"
-      );
-      const html = ejs.render(template, { name: "test" });
+        result.rows[0]["created_at"] = new Date(
+          result.rows[0]["created_at"]
+        ).toLocaleDateString();
 
-      const document = {
-        html: html,
-        data: {
-          invoiceData: result.rows[0],
-          invoiceMenus: invoiceMenus.rows,
-        },
-        path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
-        // type: "",
-      };
-      const response = await pdf.create(document, {
-        format: "A4",
-        orientation: "portrait",
-        border: "10mm",
-        childProcessOptions: {
-          env: {
-            OPENSSL_CONF: "/dev/null",
+        const template = fs.readFileSync(
+          "public/restaurant-invoice.html",
+          "utf8"
+        );
+        const html = ejs.render(template);
+
+        let document = {
+          html: html,
+          data: {
+            invoiceData: result.rows[0],
+            invoiceMenus: invoiceMenus.rows,
           },
-        },
-      });
-      if (response.filename) {
-        const mailOptions = {
-          from: "zaeem1169@gmail.com",
-          to: "zaeem1169@gmail.com",
-          subject: "INVOICE | BY Restaurant",
-          html: "<b>Check your invoice now in attachment</b>",
-          attachments: [
-            {
-              filename: `inv-${req.body.invoiceData.id}.pdf`,
-              path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
-              // cid: "uniq-mailtrap.png",
-            },
-          ],
+          path: `public/invoices/inv-${req.body.invoiceData.id}.pdf`,
+          // type: "",
         };
-        const isSend = await transport.sendMail(mailOptions);
-
-        return res.json({
-          success: true,
-          filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+        const response = await pdf.create(document, {
+          format: "A3",
+          orientation: "landscape",
+          border: "20mm",
+          // childProcessOptions: {
+          //   env: {
+          //     OPENSSL_CONF: "/etc/ssl",
+          //   },
+          // },
         });
+        if (response.filename) {
+          const mailOptions = {
+            from: process.env.EMAIL,
+            to: req.body.invoiceData.company_email,
+            subject: "INVOICE | BY Restaurant",
+            html: "<b>Check your invoice now in attachment</b>",
+            attachments: [
+              {
+                filename: `inv-${req.body.invoiceData.id}.pdf`,
+                path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+                // cid: "uniq-mailtrap.png",
+              },
+            ],
+          };
+          const isSend = await transport.sendMail(mailOptions);
+          const isUpdated = await Pool.query(
+            `UPDATE invoices set file_location = '${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf' where id = '${req.body.invoiceData.id}'`
+          );
+          return res.json({
+            success: true,
+            filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+          });
+        }
       }
+    } else {
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: req.body.invoiceData.company_email,
+        subject: "INVOICE | BY Restaurant",
+        html: "<b>Check your invoice now in attachment</b>",
+        attachments: [
+          {
+            filename: `inv-${req.body.invoiceData.id}.pdf`,
+            path: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+            // cid: "uniq-mailtrap.png",
+          },
+        ],
+      };
+      const isSend = await transport.sendMail(mailOptions);
+      return res.json({
+        success: true,
+        filePath: `${process.env.SERVER_URL}/static/invoices/inv-${req.body.invoiceData.id}.pdf`,
+      });
     }
     return res.json({ success: false, error: "error in db" });
   } catch (error) {

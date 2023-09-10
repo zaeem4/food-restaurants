@@ -1,28 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>Invoice</title>
-    <!-- Include Bootstrap CSS -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
     />
     <style>
-      .total-balance {
-        background-color: lightgrey;
-        padding: 20px;
-        text-align: right;
+      .row {
+        /* display: flex;
+        flex-wrap: wrap; */
+        display: flex;
+        flex-direction: row;
+        display: -webkit-flex;
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        justify-content: center;
+      }
+      .col-lg-4 {
+        flex: 0 0 auto;
+        width: 33.33333333%;
       }
     </style>
   </head>
 
   <body>
     <div class="container">
-      <div class="row mt-5">
+      <div class="row">
         <div class="col-lg-4"></div>
         <div class="col-lg-4"></div>
         <div class="col-lg-4">
-          <div class="invoice-header">
+          <div class="invoice-header" style="text-align: right">
             <h1>Invoice</h1>
             <p>Racun# INV-{{invoiceData.id}}</p>
             <p style="font-weight: bold">Balance Due</p>
@@ -31,56 +44,38 @@
         </div>
       </div>
 
-      <!-- <div class="invoice-section">
-        <h6>TOPLI OBROK D.O.O.</h6>
-        <p>Adresa</p>
-        79101 Prijedor <br />
-        Tax ID : 400714660007 <br />
-        Nova Banka 555-10000111976-48 <br />
-        +387 66 663.666
-        <br />
-        info@test.com
-      </div> -->
-
-      <div class="row">
+      <div class="row mt-2 mb-2">
         <div class="col-lg-4">
-          <div class="invoice-section mt-5">
+          <div class="invoice-section">
             <h6>Bill To:</h6>
-          </div>
-          <div>
-            <p style="font-weight: bold">{{invoiceData.user_name}}</p>
-            <!-- {{invoiceData.user_name}} <br /> -->
+            {{invoiceData.user_name}}<br />
             {{invoiceData.owner}} <br />
             {{invoiceData.address}}<br />
             {{invoiceData.city}}
           </div>
         </div>
+
         <div class="col-lg-4"></div>
 
-        <div class="col-lg-4" style="float: right; text-align: right">
-          <div class="invoice-section mt-5"></div>
-          <div>
-            <div class="row" style="text-align: left">
-              <p>
-                <span style="font-weight: bold">Invoice Date:</span>
-                {{invoiceData.created_at}}
-              </p>
-              <p><span style="font-weight: bold">Terms:</span> Custom</p>
-              <p>
-                <span style="font-weight: bold">Due Date:</span>
-                {{invoiceData.created_at}}
-              </p>
-            </div>
+        <div class="col-lg-4">
+          <div style="text-align: right">
+            <span style="font-weight: bold">Invoice Date:</span>
+            {{invoiceData.created_at}}
+            <br />
+            <span style="font-weight: bold">Terms:</span> Custom
+            <br />
+            <span style="font-weight: bold">Due Date:</span>
+            {{invoiceData.created_at}}
+            <br />
           </div>
         </div>
       </div>
+
       <div class="invoice-section">
         <table class="table table-bordered">
           <thead>
             <tr>
               <th>#</th>
-              <!-- <th>Items & Description</th>
-              <th>QTY</th> -->
               <th>Fee Type</th>
               <th>Amount</th>
             </tr>
@@ -90,12 +85,11 @@
               <td>1</td>
               <td>{{invoiceData.fee_type}}</td>
               <td>{{invoiceData.fee_value}}</td>
-              <!-- <td></td>
-              <td></td> -->
             </tr>
           </tbody>
         </table>
       </div>
+
       <div class="row" style="text-align: right">
         <div class="col-lg-4"></div>
         <div class="col-lg-4"></div>
@@ -110,12 +104,6 @@
               >{{invoiceData.fee_value}}</span
             >
           </p>
-          <!-- <p class="total-balance">
-            <span style="font-weight: bold">Balance Due</span>
-            <span style="margin-left: 20px; font-weight: bold"
-              >BAM1,800.00</span
-            >
-          </p> -->
         </div>
       </div>
 
@@ -126,7 +114,7 @@
         </div>
       </div>
 
-      <div class="row mt-5 mb-5">
+      <div class="row">
         <div class="col-lg-12">
           <span style="font-weight: bold">Terms & Conditions </span> <br />
           Ovaj dokument ima elektronski pečet i kao takav je punovažan. This
@@ -134,8 +122,10 @@
         </div>
       </div>
     </div>
-
-    <!-- Include Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

@@ -93,6 +93,7 @@ function RecentInvoices() {
           title: "Successfully generated and send to email address",
           footer: `<a href="${data.filePath}" target="_blank">View Pdf</a>`,
         });
+        fetchInvoices();
       } else {
         Swal.fire({
           icon: "error",

@@ -157,3 +157,6 @@ INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at
 INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT'company','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":true,"orders":true,"employees":true,"reports":true,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
 INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT,'rider','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":false,"orders":true,"employees":false,"reports":false,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
 INSERT INTO "public"."permissions" ("id","role","scope","updated_at","created_at") VALUES (DEFAULT,'kitchen','{"dashboard":false,"restaurants":false,"meals":false,"invoices":false,"companies":false,"menus":false,"orders":true,"employees":false,"reports":false,"kitchens":false}','2023-07-31 15:55:20','2023-07-31 15:55:20');
+
+-- export OPENSSL_CONF=/etc/ssl/
+-- nano /etc/ssl/openssl.cnf
