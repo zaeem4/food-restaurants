@@ -14,7 +14,7 @@ import {
   Toolbar,
   TextField,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import MaterialReactTable from "material-react-table";
 import Swal from "sweetalert2";
@@ -49,11 +49,21 @@ function RecentMenus() {
 
       const response = await apiGet("/admin/menus");
       if (response.success) {
-        setData(response.menus);
+        if (user.role === "company") {
+          const menus = response.menus.filter(
+            (menu) =>
+              menu.restaurant_id === user.restaurant_owner &&
+              menu.type.includes(user.type)
+          );
+          setData(menus);
+        } else {
+          setData(response.menus);
+        }
         setExtraData({
           meals: response.meals,
           restaurants: response.restaurants,
           days: response.days,
+          type: response.type,
         });
       } else {
         setIsError(true);
@@ -106,6 +116,7 @@ function RecentMenus() {
   };
 
   const handleCreateNewRow = (values) => {
+    console.log(values)
     fetchMenus();
   };
 
@@ -179,6 +190,14 @@ function RecentMenus() {
         ),
       },
       {
+        accessorKey: "type",
+        header: "Menu Type",
+        size: 150,
+        createAble: true,
+        enableEditing: false,
+        enableColumnFilter: false,
+      },
+      {
         accessorFn: (row) => new Date(row.created_at),
         accessorKey: "created_at",
         header: "Created On",
@@ -214,7 +233,7 @@ function RecentMenus() {
     <Card>
       {tableInstanceRef.current && (
         <Toolbar
-          sx={(theme) => ({
+          sx={() => ({
             borderRadius: "4px",
             display: "flex",
             flexDirection: {

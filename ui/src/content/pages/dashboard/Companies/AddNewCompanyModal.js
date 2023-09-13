@@ -136,6 +136,60 @@ const AddNewCompanyModal = ({
                       ))}
                     </Select>
                   </FormControl>
+                ) : column.accessorKey === "shifts" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Shift Time
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Shift Time"
+                    >
+                      {extraData.shifts.map((shift) => (
+                        <MenuItem key={shift} value={shift}>
+                          {shift}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : column.accessorKey === "type" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Company Size
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Company Size"
+                    >
+                      {extraData.type.map((i) => (
+                        <MenuItem key={i} value={i}>
+                          {i}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 ) : (
                   <TextField
                     required

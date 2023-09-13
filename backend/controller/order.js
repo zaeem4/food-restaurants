@@ -22,7 +22,7 @@ const create = async (req, res) => {
     }
 
     const query = `
-        INSERT INTO Orders (status, company_id, restaurant_id, employee_id)
+        INSERT INTO orders (status, company_id, restaurant_id, employee_id)
         VALUES ($1, $2, $3, $4)
         RETURNING id;
     `;
@@ -35,7 +35,7 @@ const create = async (req, res) => {
 
       for (const menuId of menus_id) {
         const ordersMenusInsertQuery = `
-            INSERT INTO OrdersMenus (order_id, menu_id)
+            INSERT INTO ordersmenus (order_id, menu_id)
             VALUES ($1, $2);
             `;
         const ordersMenusValues = [orderId, menuId];
@@ -91,17 +91,19 @@ const getOrdersWithMenusAndIngredients = async (req, res) => {
 
           ARRAY_AGG(DISTINCT om.menu_id) AS menus_id,
           ARRAY_AGG(DISTINCT i.name) AS ingredient_names,
+          ARRAY_AGG(DISTINCT me.name) AS meal_names,
           ARRAY_AGG(DISTINCT m.name) AS menus,
           ARRAY_AGG(DISTINCT u.user_name) AS company,
           ARRAY_AGG(DISTINCT ur.user_name) AS restaurant,
           ARRAY_AGG(DISTINCT e.name) AS employee
           
-          FROM Orders o
+          FROM orders o
           
-          LEFT JOIN OrdersMenus om ON o.id = om.order_id
+          LEFT JOIN ordersmenus om ON o.id = om.order_id
           LEFT JOIN menus m ON om.menu_id = m.id
           LEFT JOIN MealsIngredients mi ON m.meal_id = mi.meal_id
           LEFT JOIN ingredients i ON mi.ingredient_id = i.id
+          LEFT JOIN meals me ON mi.meal_id = me.id
           LEFT JOIN companies c on o.company_id = c.id
           LEFT JOIN users u on c.user_id = u.id
           LEFT JOIN restaurants r on o.restaurant_id = r.id

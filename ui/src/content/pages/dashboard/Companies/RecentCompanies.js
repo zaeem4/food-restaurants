@@ -43,6 +43,8 @@ function RecentCompanies() {
         }
         setExtraData({
           restaurants: response.restaurants,
+          type: response.type,
+          shifts: response.shifts,
         });
       } else {
         setIsError(true);
@@ -76,7 +78,7 @@ function RecentCompanies() {
         header: "Name",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "restaurant_user_name",
@@ -90,56 +92,63 @@ function RecentCompanies() {
         header: "Restaurant",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "address",
         header: "Address",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "phone",
         header: "Phone Number",
         size: 200,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "owner",
         header: "Owner",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "city",
         header: "City",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "tax_number",
         header: "Tax Number",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "email",
         header: "Email",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
       {
         accessorKey: "shifts",
         header: "Shifts",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
+      },
+      {
+        accessorKey: "type",
+        header: "Company Size",
+        size: 150,
+        createAble: true,
+        enableEditing: false,
       },
       {
         accessorFn: (row) => new Date(row.created_at),

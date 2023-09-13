@@ -175,6 +175,33 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
                       ))}
                     </Select>
                   </FormControl>
+                ) : column.accessorKey === "type" ? (
+                  <FormControl
+                    sx={{ m: 1, width: 200 }}
+                    key={column.accessorKey}
+                  >
+                    <InputLabel id={`${column.accessorKey}-label`}>
+                      Menu Type
+                    </InputLabel>
+                    <Select
+                      labelId={`${column.accessorKey}-label`}
+                      name={column.accessorKey}
+                      value={values[column.accessorKey]}
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                      label="Menu Type"
+                    >
+                      {extraData.type.map((i) => (
+                        <MenuItem key={i} value={i}>
+                          {i}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 ) : (
                   <TextField
                     required

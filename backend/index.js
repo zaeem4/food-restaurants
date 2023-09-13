@@ -43,6 +43,9 @@ app.use("/static", express.static(__dirname + "/public"));
 // });
 
 app.post("/api/login", LoginController.verify);
+app.post("/api/verify-and-send-pin", LoginController.verifyEmail);
+app.post("/api/verify-pin", LoginController.verifyPin);
+app.post("/api/reset-password", LoginController.resetPassword);
 
 app.group("/api/admin", (router) => {
   router.use(AuthMiddleware);

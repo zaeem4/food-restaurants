@@ -38,6 +38,8 @@ const getAllCompaniesWithUsers = async (req, res) => {
         success: true,
         companies: result.rows,
         restaurants: restaurants.rows,
+        type: ["big", "small"],
+        shifts: ["first-shift", "second-shift", "third-shift"],
       });
     }
     return res.json({ success: false, error: "error in db" });
@@ -59,6 +61,7 @@ const create = async (req, res) => {
       owner,
       shifts,
       restaurant_owner,
+      type,
     } = req.body;
 
     const randomPassword = generateRandomPassword();
@@ -71,8 +74,8 @@ const create = async (req, res) => {
 
     if (user.rows.length > 0) {
       const query = `
-        INSERT INTO companies (user_id, address, city, tax_number, phone, owner, shifts,restaurant_owner)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO companies (user_id, address, city, tax_number, phone, owner, shifts,restaurant_owner,type)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING id;
     `;
       const values = [
@@ -84,6 +87,7 @@ const create = async (req, res) => {
         owner,
         shifts,
         restaurant_owner,
+        type,
       ];
       const result = await Pool.query(query, values);
 

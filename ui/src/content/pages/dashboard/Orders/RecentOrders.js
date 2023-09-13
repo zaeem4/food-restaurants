@@ -4,6 +4,7 @@ import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-
 // import { useNavigate } from 'react-router-dom';
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import {
   Box,
@@ -15,14 +16,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import { apiGet } from "src/utils/axios";
 
 import AddNewOrderModal from "./AddNewOrderModal.js";
-
+import ViewOrderStatus from "./ViewOrderStatus.js";
 import ChangeOrderStatus from "./ChangeOrderStatus.js";
 
 function RecentOrders() {
@@ -42,6 +43,7 @@ function RecentOrders() {
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [changeModalOpen, setChangeModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState({});
 
   const fetchOrders = async () => {
@@ -141,7 +143,7 @@ function RecentOrders() {
               header: "Menu ID",
               size: 50,
               createAble: true,
-              enableEditing: true,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -149,7 +151,15 @@ function RecentOrders() {
               header: "Menus",
               size: 100,
               createAble: false,
-              enableEditing: false,
+              enableEditing: true,
+              enableColumnFilter: false,
+            },
+            {
+              accessorKey: "meal_names",
+              header: "Meal Names",
+              size: 100,
+              createAble: false,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -165,7 +175,7 @@ function RecentOrders() {
               header: "Company",
               size: 100,
               createAble: false,
-              enableEditing: false,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -181,7 +191,7 @@ function RecentOrders() {
               header: "Restaurant",
               size: 50,
               createAble: false,
-              enableEditing: false,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -197,7 +207,7 @@ function RecentOrders() {
               header: "Employee",
               size: 50,
               createAble: false,
-              enableEditing: false,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -205,7 +215,7 @@ function RecentOrders() {
               header: "Ingredients",
               size: 150,
               createAble: false,
-              enableEditing: false,
+              enableEditing: true,
               enableColumnFilter: false,
             },
             {
@@ -234,7 +244,7 @@ function RecentOrders() {
                 />
               ),
               createAble: false,
-              enableEditing: false,
+              enableEditing: true,
             },
           ]
         : [
@@ -424,9 +434,24 @@ function RecentOrders() {
           },
         }}
         renderRowActions={({ row }) =>
-          !["company"].includes(user.role) && (
+          !["company"].includes(user.role) ? (
             <Box sx={{ display: "flex", gap: "1rem" }}>
               <Tooltip cursor title="Change Status">
+                <span>
+                  <IconButton
+                    onClick={(e) => {
+                      setCurrentRow(row.original);
+                      setChangeModalOpen(true);
+                    }}
+                  >
+                    <AutorenewIcon />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Box>
+          ) : (
+            <Box sx={{ display: "flex", gap: "1rem" }}>
+              <Tooltip cursor title="View Details">
                 <span>
                   <IconButton
                     onClick={(e) => {
@@ -434,7 +459,7 @@ function RecentOrders() {
                       setEditModalOpen(true);
                     }}
                   >
-                    <AutorenewIcon />
+                    <VisibilityIcon />
                   </IconButton>
                 </span>
               </Tooltip>
@@ -464,13 +489,23 @@ function RecentOrders() {
         />
       )}
 
-      {editModalOpen && (
+      {changeModalOpen && (
         <ChangeOrderStatus
+          open={setChangeModalOpen}
+          onClose={() => setChangeModalOpen(false)}
+          onSubmit={handleCreateNewRow}
+          row={currentRow}
+          extraData={extraData}
+        />
+      )}
+
+      {editModalOpen && (
+        <ViewOrderStatus
+          columns={columns}
           open={editModalOpen}
           onClose={() => setEditModalOpen(false)}
           onSubmit={handleCreateNewRow}
           row={currentRow}
-          extraData={extraData}
         />
       )}
     </Card>

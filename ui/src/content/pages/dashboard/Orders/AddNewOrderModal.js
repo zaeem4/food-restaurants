@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import {
   Button,
@@ -27,7 +27,6 @@ const AddNewOrderModal = ({
   user,
   extraData,
 }) => {
-  console.log(user);
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>

@@ -62,8 +62,8 @@ const create = async (req, res) => {
         ARRAY_AGG(DISTINCT om.menu_id) AS menus_id,
         ARRAY_AGG(me.price) AS prices,
         SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
-        FROM Orders o
-        LEFT JOIN OrdersMenus om ON o.id = om.order_id
+        FROM orders o
+        LEFT JOIN ordersmenus om ON o.id = om.order_id
         LEFT JOIN menus mu ON om.menu_id = mu.id
         LEFT JOIN meals me ON mu.meal_id = me.id
         WHERE o.created_at >= '${start_date.split("T")[0]}' 
@@ -269,8 +269,8 @@ const generateForRestaurant = async (req, res) => {
           ARRAY_AGG(DISTINCT mu.name) AS menus_name,
           ARRAY_AGG(me.price) AS prices,
           SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
-          FROM Orders o
-          LEFT JOIN OrdersMenus om ON o.id = om.order_id
+          FROM orders o
+          LEFT JOIN ordersmenus om ON o.id = om.order_id
           LEFT JOIN menus mu ON om.menu_id = mu.id
           LEFT JOIN meals me ON mu.meal_id = me.id
           WHERE o.created_at >= '${result.rows[0].start_date

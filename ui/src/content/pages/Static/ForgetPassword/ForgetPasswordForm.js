@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
 // import { useDispatch } from 'react-redux';
 
 import {
@@ -7,8 +6,6 @@ import {
   TextField,
   IconButton,
   InputAdornment,
-  FormControlLabel,
-  Checkbox,
   Box,
   Typography,
 } from "@mui/material";
@@ -17,38 +14,106 @@ import { MuiOtpInput } from "mui-one-time-password-input";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
+import Swal from "sweetalert2";
+import { apiPost } from "src/utils/axios";
+
 // import { apiCall } from 'src/utils/axios';
 
 // import { setUser } from 'src/redux/user';
 
 export default function ForgetPasswordForm() {
-  // const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [spinner, setSpinner] = useState(false);
   const [values, setValues] = useState({
     email: "",
     otp: "",
-    newpassword: "",
+    newPassword: "",
     repeatPassword: "",
   });
   const handleShowPassword = () => {
     setShowPassword((show) => !show);
   };
 
-  const handleEmailSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    setStep(2);
+    try {
+      setSpinner(true);
+
+      const data = await apiPost(`/verify-and-send-pin`, values);
+      setSpinner(false);
+      if (data.success) {
+        setStep(2);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setSpinner(false);
+    }
   };
 
-  const handleCodeSubmit = (e) => {
+  const handleCodeSubmit = async (e) => {
     e.preventDefault();
-    setStep(3);
+    try {
+      setSpinner(true);
+
+      const data = await apiPost(`/verify-pin`, values);
+      setSpinner(false);
+
+      if (data.success) {
+        setStep(3);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setSpinner(false);
+    }
   };
 
-  const handleNewPasswordSubmit = (e) => {
+  const handleNewPasswordSubmit = async (e) => {
     e.preventDefault();
+    try {
+      setSpinner(true);
+
+      const data = await apiPost(`/reset-password`, values);
+
+      if (data.success) {
+        window.location.href = "/login";
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+
+        setSpinner(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setSpinner(false);
+    }
   };
 
   const handleChange = (newValue) => {
