@@ -78,7 +78,7 @@ app.group("/api/admin", (router) => {
   router.get("/menus", menuController.get);
   router.post("/menus/create", menuController.create);
 
-  router.get("/orders", orderController.getOrdersWithMenusAndIngredients);
+  router.get("/orders", orderController.getOrdersWithMealsAndIngredients);
   router.post("/orders/create", orderController.create);
   router.put("/order/:id", orderController.updateOrderStatus);
 

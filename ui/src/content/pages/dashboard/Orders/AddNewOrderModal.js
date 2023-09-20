@@ -38,7 +38,7 @@ const AddNewOrderModal = ({
         // ) {
         //   acc[column.accessorKey] = user.role_id;
         // } else
-        if (column.accessorKey === "menus_id") {
+        if (column.accessorKey === "meals_id") {
           acc[column.accessorKey] = [];
         } else {
           acc[column.accessorKey] = " ";
@@ -112,13 +112,13 @@ const AddNewOrderModal = ({
             {columns.map(
               (column) =>
                 column.createAble &&
-                (column.accessorKey === "menus_id" ? (
+                column.accessorKey === "meals_id" && (
                   <FormControl
-                    sx={{ m: 1, width: 200 }}
+                    sx={{ m: 1, width: "100%" }}
                     key={column.accessorKey}
                   >
                     <InputLabel id={`${column.accessorKey}-label`}>
-                      Menus
+                      Meals
                     </InputLabel>
                     <Select
                       labelId={`${column.accessorKey}-label`}
@@ -134,147 +134,16 @@ const AddNewOrderModal = ({
                               : e.target.value,
                         })
                       }
-                      label="Menus"
+                      label="Meals"
                     >
-                      {extraData.menus.map((menu) => (
-                        <MenuItem key={menu.id} value={menu.id}>
-                          {menu.name}
+                      {extraData.meals.map((meal) => (
+                        <MenuItem key={meal.id} value={meal.id}>
+                          {meal.name}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                ) : column.accessorKey === "company_id" ? (
-                  <FormControl
-                    sx={{ m: 1, width: 200 }}
-                    key={column.accessorKey}
-                  >
-                    <InputLabel id={`${column.accessorKey}-label`}>
-                      Companies
-                    </InputLabel>
-                    <Select
-                      labelId={`${column.accessorKey}-label`}
-                      name={column.accessorKey}
-                      value={values[column.accessorKey]}
-                      onChange={(e) =>
-                        setValues({
-                          ...values,
-                          [e.target.name]: e.target.value,
-                        })
-                      }
-                      label="Companies"
-                    >
-                      {extraData.companies.map((company) => (
-                        <MenuItem key={company.id} value={company.id}>
-                          {company.user_name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : column.accessorKey === "status" ? (
-                  <FormControl
-                    sx={{ m: 1, width: 200 }}
-                    key={column.accessorKey}
-                  >
-                    <InputLabel id={`${column.accessorKey}-label`}>
-                      Status
-                    </InputLabel>
-                    <Select
-                      labelId={`${column.accessorKey}-label`}
-                      name={column.accessorKey}
-                      value={values[column.accessorKey]}
-                      onChange={(e) =>
-                        setValues({
-                          ...values,
-                          [e.target.name]: e.target.value,
-                        })
-                      }
-                      label="Status"
-                    >
-                      {extraData.status.map((id) => (
-                        <MenuItem key={id} value={id}>
-                          {id}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : column.accessorKey === "restaurant_id" ? (
-                  <FormControl
-                    sx={{ m: 1, width: 200 }}
-                    key={column.accessorKey}
-                  >
-                    <InputLabel id={`${column.accessorKey}-label`}>
-                      Restaurants
-                    </InputLabel>
-                    <Select
-                      labelId={`${column.accessorKey}-label`}
-                      name={column.accessorKey}
-                      value={
-                        user.role === "restaurant"
-                          ? user.role_id
-                          : values[column.accessorKey]
-                      }
-                      onChange={(e) =>
-                        setValues({
-                          ...values,
-                          [e.target.name]: e.target.value,
-                        })
-                      }
-                      label="Restaurants"
-                      inputProps={{ readOnly: user.role === "restaurant" }}
-                    >
-                      {extraData.restaurants.map((restaurant) => (
-                        <MenuItem key={restaurant.id} value={restaurant.id}>
-                          {restaurant.user_name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : column.accessorKey === "employee_id" ? (
-                  <FormControl
-                    sx={{ m: 1, width: 200 }}
-                    key={column.accessorKey}
-                  >
-                    <InputLabel id={`${column.accessorKey}-label`}>
-                      Employees
-                    </InputLabel>
-                    <Select
-                      labelId={`${column.accessorKey}-label`}
-                      name={column.accessorKey}
-                      value={values[column.accessorKey]}
-                      onChange={(e) =>
-                        setValues({
-                          ...values,
-                          [e.target.name]: e.target.value,
-                        })
-                      }
-                      label="Employees"
-                    >
-                      {extraData.employees.map((employee) => (
-                        <MenuItem key={employee.id} value={employee.id}>
-                          {employee.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <TextField
-                    required
-                    error={!values[column.accessorKey]}
-                    variant="standard"
-                    key={column.accessorKey}
-                    label={column.header}
-                    name={column.accessorKey}
-                    value={values[column.accessorKey]}
-                    onChange={(e) =>
-                      setValues({ ...values, [e.target.name]: e.target.value })
-                    }
-                    // inputProps={{
-                    //   readOnly:
-                    //     user.role === "restaurant" &&
-                    //     column.accessorKey === "restaurant_id",
-                    // }}
-                  />
-                ))
+                )
             )}
           </Stack>
           <br />
@@ -298,3 +167,135 @@ const AddNewOrderModal = ({
 };
 
 export default AddNewOrderModal;
+// : column.accessorKey === "company_id" ? (
+//   <FormControl
+//     sx={{ m: 1, width: 200 }}
+//     key={column.accessorKey}
+//   >
+//     <InputLabel id={`${column.accessorKey}-label`}>
+//       Companies
+//     </InputLabel>
+//     <Select
+//       labelId={`${column.accessorKey}-label`}
+//       name={column.accessorKey}
+//       value={values[column.accessorKey]}
+//       onChange={(e) =>
+//         setValues({
+//           ...values,
+//           [e.target.name]: e.target.value,
+//         })
+//       }
+//       label="Companies"
+//     >
+//       {extraData.companies.map((company) => (
+//         <MenuItem key={company.id} value={company.id}>
+//           {company.user_name}
+//         </MenuItem>
+//       ))}
+//     </Select>
+//   </FormControl>
+// ) : column.accessorKey === "status" ? (
+//   <FormControl
+//     sx={{ m: 1, width: 200 }}
+//     key={column.accessorKey}
+//   >
+//     <InputLabel id={`${column.accessorKey}-label`}>
+//       Status
+//     </InputLabel>
+//     <Select
+//       labelId={`${column.accessorKey}-label`}
+//       name={column.accessorKey}
+//       value={values[column.accessorKey]}
+//       onChange={(e) =>
+//         setValues({
+//           ...values,
+//           [e.target.name]: e.target.value,
+//         })
+//       }
+//       label="Status"
+//     >
+//       {extraData.status.map((id) => (
+//         <MenuItem key={id} value={id}>
+//           {id}
+//         </MenuItem>
+//       ))}
+//     </Select>
+//   </FormControl>
+// ) : column.accessorKey === "restaurant_id" ? (
+//   <FormControl
+//     sx={{ m: 1, width: 200 }}
+//     key={column.accessorKey}
+//   >
+//     <InputLabel id={`${column.accessorKey}-label`}>
+//       Restaurants
+//     </InputLabel>
+//     <Select
+//       labelId={`${column.accessorKey}-label`}
+//       name={column.accessorKey}
+//       value={
+//         user.role === "restaurant"
+//           ? user.role_id
+//           : values[column.accessorKey]
+//       }
+//       onChange={(e) =>
+//         setValues({
+//           ...values,
+//           [e.target.name]: e.target.value,
+//         })
+//       }
+//       label="Restaurants"
+//       inputProps={{ readOnly: user.role === "restaurant" }}
+//     >
+//       {extraData.restaurants.map((restaurant) => (
+//         <MenuItem key={restaurant.id} value={restaurant.id}>
+//           {restaurant.user_name}
+//         </MenuItem>
+//       ))}
+//     </Select>
+//   </FormControl>
+// ) : column.accessorKey === "employee_id" ? (
+//   <FormControl
+//     sx={{ m: 1, width: 200 }}
+//     key={column.accessorKey}
+//   >
+//     <InputLabel id={`${column.accessorKey}-label`}>
+//       Employees
+//     </InputLabel>
+//     <Select
+//       labelId={`${column.accessorKey}-label`}
+//       name={column.accessorKey}
+//       value={values[column.accessorKey]}
+//       onChange={(e) =>
+//         setValues({
+//           ...values,
+//           [e.target.name]: e.target.value,
+//         })
+//       }
+//       label="Employees"
+//     >
+//       {extraData.employees.map((employee) => (
+//         <MenuItem key={employee.id} value={employee.id}>
+//           {employee.name}
+//         </MenuItem>
+//       ))}
+//     </Select>
+//   </FormControl>
+// ) : (
+//   <TextField
+//     required
+//     error={!values[column.accessorKey]}
+//     variant="standard"
+//     key={column.accessorKey}
+//     label={column.header}
+//     name={column.accessorKey}
+//     value={values[column.accessorKey]}
+//     onChange={(e) =>
+//       setValues({ ...values, [e.target.name]: e.target.value })
+//     }
+//     // inputProps={{
+//     //   readOnly:
+//     //     user.role === "restaurant" &&
+//     //     column.accessorKey === "restaurant_id",
+//     // }}
+//   />
+// ))

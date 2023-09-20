@@ -59,16 +59,20 @@ const create = async (req, res) => {
     const query = `
       SELECT
         o.id, o.created_at, o.restaurant_id,
-        ARRAY_AGG(DISTINCT om.menu_id) AS menus_id,
+        
         ARRAY_AGG(me.price) AS prices,
+        
         SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
         FROM orders o
-        LEFT JOIN ordersmenus om ON o.id = om.order_id
-        LEFT JOIN menus mu ON om.menu_id = mu.id
-        LEFT JOIN meals me ON mu.meal_id = me.id
+        
+        LEFT JOIN ordersmeals om ON o.id = om.order_id
+        LEFT JOIN meals me ON om.meal_id = me.id
+
         WHERE o.created_at >= '${start_date.split("T")[0]}' 
         AND o.created_at <= '${end_date.split("T")[0]}' 
+
         ${andQuery}
+        
         GROUP BY o.id;
     `;
 
@@ -261,18 +265,21 @@ const generateForRestaurant = async (req, res) => {
         LEFT JOIN users cu ON c.user_id = cu.id
         WHERE i.id = '${req.body.invoiceData.id}';
       `;
+      
       const result = await Pool.query(query);
 
       if (result.rows.length > 0) {
         const query = `
           SELECT o.id, 
-          ARRAY_AGG(DISTINCT mu.name) AS menus_name,
+          ARRAY_AGG(DISTINCT me.name) AS meals_name,
           ARRAY_AGG(me.price) AS prices,
+
           SUM(CASE WHEN me.price IS NOT NULL THEN me.price ELSE 0 END) AS total_prices
           FROM orders o
-          LEFT JOIN ordersmenus om ON o.id = om.order_id
-          LEFT JOIN menus mu ON om.menu_id = mu.id
-          LEFT JOIN meals me ON mu.meal_id = me.id
+          
+          LEFT JOIN ordersmeals om ON o.id = om.order_id
+          LEFT JOIN meals me ON om.meal_id = me.id
+          
           WHERE o.created_at >= '${result.rows[0].start_date
             .toLocaleDateString()
             .replaceAll("/", "-")}' 
@@ -281,6 +288,7 @@ const generateForRestaurant = async (req, res) => {
             .replaceAll("/", "-")}'
           AND o.restaurant_id = '${result.rows[0].restaurant_id}'
           AND o.company_id = '${result.rows[0].company_id}'
+
           GROUP BY o.id;
         `;
 

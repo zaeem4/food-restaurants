@@ -353,6 +353,13 @@ export const NebulaFighterTheme = createTheme({
         },
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: colors.primary.main,
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         "html, body": {

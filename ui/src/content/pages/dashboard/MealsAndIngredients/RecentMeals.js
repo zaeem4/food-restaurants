@@ -169,7 +169,7 @@ function RecentMeals() {
         // positionActionsColumn={"last"}
         initialState={{
           showGlobalFilter: true,
-          columnVisibility: { ingredients: false },
+          columnVisibility: { ingredients: false, restaurant_id: false },
         }}
         muiToolbarAlertBannerProps={
           isError

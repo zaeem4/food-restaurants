@@ -62,7 +62,7 @@ const ViewOrderStatus = ({ open, columns, onClose, onSubmit, row }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Edit Order</DialogTitle>
+      <DialogTitle>View Order Details</DialogTitle>
       <DialogContent sx={{ paddingTop: "6px!important" }}>
         <Box
           component="form"
@@ -85,10 +85,7 @@ const ViewOrderStatus = ({ open, columns, onClose, onSubmit, row }) => {
             {columns.map((column) =>
               column.enableEditing ? (
                 <TextField
-                  required
-                  error={!row[column.accessorKey]}
-                  variant="standard"
-                  label={column.header}
+                  // label={column.header}
                   key={column.accessorKey}
                   name={column.accessorKey}
                   value={row[column.accessorKey]}
@@ -99,8 +96,7 @@ const ViewOrderStatus = ({ open, columns, onClose, onSubmit, row }) => {
                 />
               ) : ["created_at", "updated_at"].includes(column.accessorKey) ? (
                 <TextField
-                  variant="standard"
-                  label={column.header}
+                  // label={column.header}
                   key={column.accessorKey}
                   name={column.accessorKey}
                   value={new Date(row[column.accessorKey]).toLocaleDateString()}

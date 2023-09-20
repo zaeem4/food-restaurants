@@ -19,13 +19,27 @@ import { LoadingButton } from "@mui/lab";
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
+const AddNewMenusModal = ({
+  open,
+  columns,
+  onClose,
+  onSubmit,
+  user,
+  extraData,
+}) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       if (column.accessorKey && column.createAble) {
-        if (column.accessorKey === "day") {
+        if (
+          user.role === "restaurant" &&
+          column.accessorKey === "restaurant_id"
+        ) {
+          acc[column.accessorKey] = user.role_id;
+        } else if (column.accessorKey === "day") {
+          acc[column.accessorKey] = [];
+        } else if (column.accessorKey === "meals_id") {
           acc[column.accessorKey] = [];
         } else {
           acc[column.accessorKey] = " ";
@@ -104,7 +118,11 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
                     <Select
                       labelId={`${column.accessorKey}-label`}
                       name={column.accessorKey}
-                      value={values[column.accessorKey]}
+                      value={
+                        user.role === "restaurant"
+                          ? user.role_id
+                          : values[column.accessorKey]
+                      }
                       onChange={(e) =>
                         setValues({
                           ...values,
@@ -112,6 +130,7 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
                         })
                       }
                       label="Restaurants"
+                      inputProps={{ readOnly: user.role === "restaurant" }}
                     >
                       {extraData.restaurants.map((restaurant) => (
                         <MenuItem key={restaurant.id} value={restaurant.id}>
@@ -120,7 +139,7 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
                       ))}
                     </Select>
                   </FormControl>
-                ) : column.accessorKey === "meal_id" ? (
+                ) : column.accessorKey === "meals_id" ? (
                   <FormControl
                     sx={{ m: 1, width: 200 }}
                     key={column.accessorKey}
@@ -131,11 +150,15 @@ const AddNewMenusModal = ({ open, columns, onClose, onSubmit, extraData }) => {
                     <Select
                       labelId={`${column.accessorKey}-label`}
                       name={column.accessorKey}
+                      multiple
                       value={values[column.accessorKey]}
                       onChange={(e) =>
                         setValues({
                           ...values,
-                          [e.target.name]: e.target.value,
+                          [e.target.name]:
+                            typeof e.target.value === "string"
+                              ? e.target.value.split(",")
+                              : e.target.value,
                         })
                       }
                       label="Meals"

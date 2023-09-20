@@ -2,8 +2,8 @@ import { useMemo, useEffect, useState, useRef } from "react";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import { Box, Button, Card, Tooltip, IconButton, Toolbar } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import { Box, Button, Card, Toolbar } from "@mui/material";
+// import EditIcon from "@mui/icons-material/Edit";
 import MaterialReactTable from "material-react-table";
 
 import AddNewEmployeeModal from "./AddNewEmployeeModal.js";
@@ -69,15 +69,15 @@ function RecentEmployees() {
         header: "Name",
         size: 150,
         createAble: true,
-        enableEditing: true,
+        enableEditing: false,
       },
-      {
-        accessorKey: "company_id",
-        header: "Company ID",
-        size: 150,
-        createAble: true,
-        enableEditing: true,
-      },
+      // {
+      //   accessorKey: "company_id",
+      //   header: "Company ID",
+      //   size: 150,
+      //   createAble: false,
+      //   enableEditing: false,
+      // },
       {
         accessorFn: (row) => new Date(row.created_at),
         Cell: ({ cell }) => cell.getValue()?.toLocaleDateString(),
@@ -190,6 +190,7 @@ function RecentEmployees() {
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          user={user}
         />
       )}
 

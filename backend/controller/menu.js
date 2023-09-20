@@ -9,21 +9,23 @@ const getDays = () => {
 const get = async (req, res) => {
   try {
     const query = `
-      SELECT m.*,
+      SELECT m.*, ml.name AS meals, ml.id AS meals_id,
+        
+        ARRAY_AGG(DISTINCT md.day) AS day,
+        ARRAY_AGG(DISTINCT u.user_name) AS restaurant,
+        ARRAY_AGG(DISTINCT md.type) AS type
 
-      ARRAY_AGG(DISTINCT md.day) AS day,
-      ARRAY_AGG(DISTINCT u.user_name) AS restaurant,
-      ARRAY_AGG(DISTINCT ml.name) AS meal,
-      ARRAY_AGG(DISTINCT md.type) AS type
+        FROM menus m 
 
-      FROM menus m 
+        LEFT JOIN menusmeals mm on m.id = mm.menu_id
+        LEFT JOIN meals ml on mm.meal_id = ml.id
+        
+        LEFT JOIN menusdates md on m.id = md.menu_id
 
-      LEFT JOIN menusdates md on m.id = md.menu_id
-      LEFT JOIN restaurants r on m.restaurant_id = r.id
-      LEFT JOIN meals ml on m.meal_id = ml.id
-      LEFT JOIN users u on r.user_id = u.id
+        LEFT JOIN restaurants r on m.restaurant_id = r.id
+        LEFT JOIN users u on r.user_id = u.id
 
-      group by m.id;
+      group by m.id, ml.id;
     `;
     const result = await Pool.query(query);
     if (result.rows) {
@@ -50,12 +52,19 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { name, description, meal_id, restaurant_id, day, type } = req.body;
+    const { name, description, meals_id, restaurant_id, day, type } = req.body;
 
     if (day.length <= 0) {
       return res.json({
         success: false,
         error: `Select dates of month`,
+      });
+    }
+
+    if (meals_id.length <= 0) {
+      return res.json({
+        success: false,
+        error: `Select meals also`,
       });
     }
 
@@ -82,12 +91,12 @@ const create = async (req, res) => {
     }
 
     const query = `
-      INSERT INTO menus (name, description, meal_id, restaurant_id)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO menus (name, description, restaurant_id)
+      VALUES ($1, $2, $3)
       RETURNING id;
     `;
 
-    const values = [name, description, meal_id, restaurant_id];
+    const values = [name, description, restaurant_id];
     const result = await Pool.query(query, values);
 
     if (result.rows.length > 0) {
@@ -100,6 +109,16 @@ const create = async (req, res) => {
         const menusDatesValues = [menuId, i, type];
 
         await Pool.query(menusDatesInsertQuery, menusDatesValues);
+      }
+      for (const i of meals_id) {
+        const menuId = result.rows[0].id;
+        const menusMealsInsertQuery = `
+            INSERT INTO menusmeals (menu_id, meal_id)
+            VALUES ($1, $2);
+            `;
+        const menusMealsValues = [menuId, i];
+
+        await Pool.query(menusMealsInsertQuery, menusMealsValues);
       }
       return res.json({ success: true });
     }

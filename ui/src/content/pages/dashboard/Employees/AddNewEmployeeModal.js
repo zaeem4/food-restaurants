@@ -15,7 +15,7 @@ import { LoadingButton } from "@mui/lab";
 import Swal from "sweetalert2";
 import { apiPost } from "src/utils/axios";
 
-const AddNewEmployeeModal = ({ open, columns, onClose, onSubmit }) => {
+const AddNewEmployeeModal = ({ open, columns, onClose, onSubmit, user }) => {
   const [spinner, setSpinner] = useState(false);
 
   const [values, setValues] = useState(() =>
@@ -31,7 +31,10 @@ const AddNewEmployeeModal = ({ open, columns, onClose, onSubmit }) => {
     e.preventDefault();
     try {
       setSpinner(true);
-      const data = await apiPost(`/admin/employees/create`, values);
+      const data = await apiPost(`/admin/employees/create`, {
+        ...values,
+        company_id: user.role_id,
+      });
 
       if (data.success) {
         onSubmit(values);

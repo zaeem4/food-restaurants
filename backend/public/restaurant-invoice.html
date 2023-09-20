@@ -86,7 +86,6 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Menu Id</th>
               <th>Items & Description</th>
               <th>Amount</th>
             </tr>
@@ -94,8 +93,7 @@
           <tbody>
             {{#each invoiceMenus}}
             <tr>
-              <td>{{this.id}}</td>
-              <td>{{this.menus_name}}</td>
+              <td>{{this.meals_name}}</td>
               <td>{{this.total_prices}}</td>
             </tr>
             {{/each}}

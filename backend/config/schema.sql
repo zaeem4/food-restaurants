@@ -92,12 +92,6 @@ CREATE TABLE orders (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ordersmenus (
-  order_id bigint REFERENCES Orders(id) ON DELETE CASCADE,
-  menu_id bigint REFERENCES menus(id) ON DELETE CASCADE,
-  PRIMARY KEY (order_id, menu_id)
-);
-
 CREATE TABLE invoices (
   id serial PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -148,6 +142,25 @@ add column type VARCHAR(255);
 
 alter table menusdates
 add column type VARCHAR(255);
+
+alter table menus
+drop column meal_id;
+
+alter table orders
+add column total DECIMAL(10, 2) NOT NULL DEFAULT(0);
+
+CREATE TABLE ordersmeals (
+  order_id bigint REFERENCES orders(id) ON DELETE CASCADE,
+  meal_id bigint REFERENCES meals(id) ON DELETE CASCADE,
+  PRIMARY KEY (order_id, meal_id)
+);
+
+
+CREATE TABLE menusmeals (
+  menu_id bigint REFERENCES menus(id) ON DELETE CASCADE,
+  meal_id bigint REFERENCES meals(id) ON DELETE CASCADE,
+  PRIMARY KEY (menu_id, meal_id)
+);
 
 INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT,'test1','admin1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','admin','2023-07-31 15:06:54','2023-07-31 15:06:54');
 INSERT INTO "public"."users" ("id","user_name","email","password","role","updated_at","created_at") VALUES (DEFAULT'restaurant1','restaurant1@test.com','$2b$10$gkewYUcVj07NesBirUbmoe8WkMVio/RMRhjhHXFyiy79F2uC2.Rpi','restaurant','2023-08-01 16:24:35','2023-08-01 16:24:35');

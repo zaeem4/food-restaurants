@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState, useRef } from "react";
+import { useMemo, useEffect, useState, useRef, useReducer } from "react";
 import { useSelector } from "react-redux";
 import { MRT_GlobalFilterTextField as MRTGlobalFilterTextField } from "material-react-table";
 // import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,9 @@ import EditMenusModal from "./EditMenusModal.js";
 
 function RecentMenus() {
   const user = useSelector((state) => state.user.value);
+
   const tableInstanceRef = useRef(null);
+  const rerender = useReducer(() => ({}), {})[1];
 
   const [data, setData] = useState([]);
 
@@ -42,6 +44,7 @@ function RecentMenus() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const fetchMenus = async () => {
     try {
@@ -53,7 +56,13 @@ function RecentMenus() {
           const menus = response.menus.filter(
             (menu) =>
               menu.restaurant_id === user.restaurant_owner &&
-              menu.type.includes(user.type)
+              menu.type.includes(user.type) &&
+              menu.day.includes(new Date().getDate())
+          );
+          setData(menus);
+        } else if (user.role === "restaurant") {
+          const menus = response.menus.filter(
+            (menu) => menu.restaurant_id === user.role_id
           );
           setData(menus);
         } else {
@@ -81,7 +90,44 @@ function RecentMenus() {
   const placeOrder = async (row) => {
     const orderObject = {
       restaurant_id: row.restaurant_id,
-      menus_id: row.id,
+      meals_id: [row.meals_id],
+      status: "pending",
+      company_id: user.role_id,
+      employee_id: null,
+    };
+    try {
+      setIsLoading(true);
+      const data = await apiPost(`/admin/orders/create`, orderObject);
+
+      if (data.success) {
+        setIsLoading(false);
+        Swal.fire({
+          icon: "success",
+          title: "Successfully Placed",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+
+        setIsLoading(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error,
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const placeMultiOrder = async (ids) => {
+    const orderObject = {
+      restaurant_id: user.restaurant_owner,
+      meals_id: ids,
       status: "pending",
       company_id: user.role_id,
       employee_id: null,
@@ -116,7 +162,7 @@ function RecentMenus() {
   };
 
   const handleCreateNewRow = (values) => {
-    console.log(values)
+    console.log(values);
     fetchMenus();
   };
 
@@ -147,15 +193,15 @@ function RecentMenus() {
         enableColumnFilter: false,
       },
       {
-        accessorKey: "meal",
-        header: "Meal",
+        accessorKey: "meals",
+        header: "Meals",
         size: 150,
         createAble: false,
         enableEditing: false,
         enableColumnFilter: false,
       },
       {
-        accessorKey: "meal_id",
+        accessorKey: "meals_id",
         header: "Meal ID",
         size: 150,
         createAble: true,
@@ -246,34 +292,61 @@ function RecentMenus() {
           })}
         >
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-          {!["restaurant", "company"].includes(user.role) && (
-            <Box>
+          <Box>
+            {!["company"].includes(user.role) && (
               <Button
                 variant="contained"
                 onClick={() => setCreateModalOpen(true)}
+                sx={{ marginRight: "5px" }}
               >
                 Add New
               </Button>
-            </Box>
-          )}
+            )}
+            {user.role === "company" && (
+              <Button
+                disabled={!Object.keys(rowSelection).length > 0}
+                variant="contained"
+                onClick={() => {
+                  const list = [];
+                  const ids = Object.keys(rowSelection);
+                  ids.forEach((id) => {
+                    list.push(data[id].meals_id);
+                  });
+                  placeMultiOrder(list);
+                }}
+              >
+                Place Order
+              </Button>
+            )}
+          </Box>
         </Toolbar>
       )}
       <MaterialReactTable
         columns={columns}
         data={data}
+        enableGrouping
         enableColumnFilters
         enableFullScreenToggle={false}
         enableDensityToggle={false}
         enableStickyHeader
         enableStickyFooter
         enableRowActions
+        enableRowSelection
         positionToolbarAlertBanner="bottom"
         // positionActionsColumn={"last"}
         enableTopToolbar={false}
         initialState={{
+          expanded: true,
+          grouping: ["name"],
           showGlobalFilter: true,
           showColumnFilters: true,
-          columnVisibility: { restaurant_id: false, meal_id: false },
+          columnVisibility: { restaurant_id: false, meals_id: false },
+        }}
+        onRowSelectionChange={(updater) => {
+          setRowSelection((prev) =>
+            updater instanceof Function ? updater(prev) : updater
+          );
+          queueMicrotask(rerender);
         }}
         muiToolbarAlertBannerProps={
           isError
@@ -311,7 +384,6 @@ function RecentMenus() {
                 <span>
                   <IconButton
                     onClick={(e) => {
-                      // setCurrentRow(row.original);
                       placeOrder(row.original);
                     }}
                   >
@@ -325,12 +397,13 @@ function RecentMenus() {
         globalFilterModeOptions={["fuzzy", "startsWith"]}
         muiSearchTextFieldProps={{
           placeholder: `Search`,
-          sx: { minWidth: "330%" },
+          sx: { minWidth: "320%" },
           variant: "outlined",
         }}
         state={{
           isLoading,
           showAlertBanner: isError,
+          rowSelection,
         }}
         tableInstanceRef={tableInstanceRef}
       />
@@ -341,6 +414,7 @@ function RecentMenus() {
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateNewRow}
+          user={user}
           extraData={extraData}
         />
       )}

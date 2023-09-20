@@ -32,7 +32,7 @@ function RecentOrders() {
 
   const [data, setData] = useState([]);
   const [extraData, setExtraData] = useState({
-    menus: [],
+    meals: [],
     restaurants: [],
     companies: [],
     status: [],
@@ -79,7 +79,7 @@ function RecentOrders() {
           setData(response.orders);
         }
         setExtraData({
-          menus: response.menus,
+          meals: response.meals,
           restaurants: response.restaurants,
           companies: response.companies,
           status: response.status,
@@ -139,24 +139,16 @@ function RecentOrders() {
               ),
             },
             {
-              accessorKey: "menus_id",
-              header: "Menu ID",
+              accessorKey: "meals_id",
+              header: "Meal ID",
               size: 50,
               createAble: true,
               enableEditing: false,
               enableColumnFilter: false,
             },
             {
-              accessorKey: "menus",
-              header: "Menus",
-              size: 100,
-              createAble: false,
-              enableEditing: true,
-              enableColumnFilter: false,
-            },
-            {
               accessorKey: "meal_names",
-              header: "Meal Names",
+              header: "Meals",
               size: 100,
               createAble: false,
               enableEditing: true,
@@ -207,7 +199,7 @@ function RecentOrders() {
               header: "Employee",
               size: 50,
               createAble: false,
-              enableEditing: true,
+              enableEditing: false,
               enableColumnFilter: false,
             },
             {
@@ -273,7 +265,7 @@ function RecentOrders() {
               ),
             },
             {
-              accessorKey: "menus_id",
+              accessorKey: "meals_id",
               header: "Menu ID",
               size: 50,
               createAble: true,
@@ -281,8 +273,8 @@ function RecentOrders() {
               enableColumnFilter: false,
             },
             {
-              accessorKey: "menus",
-              header: "Menus",
+              accessorKey: "meal_names",
+              header: "Meals",
               size: 100,
               createAble: false,
               enableEditing: false,
@@ -385,16 +377,7 @@ function RecentOrders() {
           })}
         >
           <MRTGlobalFilterTextField table={tableInstanceRef.current} />
-          {user.role === "company" && (
-            <Box>
-              <Button
-                variant="contained"
-                onClick={() => setCreateModalOpen(true)}
-              >
-                Add New
-              </Button>
-            </Box>
-          )}
+          
         </Toolbar>
       )}
       <MaterialReactTable
@@ -415,9 +398,12 @@ function RecentOrders() {
           showColumnFilters: true,
           columnVisibility: {
             restaurant_id: false,
-            menus_id: false,
+            meals_id: false,
             company_id: false,
             employee_id: false,
+            restaurant: false,
+            company: false,
+            employee: false,
           },
         }}
         muiToolbarAlertBannerProps={
