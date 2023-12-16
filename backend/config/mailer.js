@@ -3,11 +3,11 @@ const Logger = require("../utils/logger");
 
 try {
   const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
+    host: "",
     port: 2525,
     auth: {
-      user: "f638c512ac3561",
-      pass: "23073c9cd481bd",
+      user: "",
+      pass: "",
     },
   });
 
